@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { ROUTES } from '@/constants'
 import { AdminLayout, MainLayout } from '@/layouts'
-import { AuthProvider } from '@/features/admin/context'
+import { ErrorBoundary } from '@/components'
 import { routeConfig } from './routes.config'
 
 const KrakeSplashPage = lazy(() => import('@/features/krakedev/pages/KrakeSplashPage'))
@@ -19,8 +19,9 @@ function RouteFallback() {
 
 export function AppRouter() {
   return (
-    <Suspense fallback={<RouteFallback />}>
-      <Routes>
+    <ErrorBoundary>
+      <Suspense fallback={<RouteFallback />}>
+        <Routes>
         <Route element={<MainLayout />}>
           {routeConfig
             .filter((route) => route.layout === 'main')
@@ -40,17 +41,11 @@ export function AppRouter() {
         <Route path={ROUTES.KRAKE.SPLASH} element={<KrakeSplashPage />} />
         <Route path={ROUTES.KRAKE.HOME} element={<KrakeHomePage />} />
 
-        <Route
-          path={ROUTES.ADMIN_LOGIN}
-          element={
-            <AuthProvider>
-              <AdminLoginPage />
-            </AuthProvider>
-          }
-        />
+        <Route path={ROUTES.ADMIN_LOGIN} element={<AdminLoginPage />} />
 
         <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
-      </Routes>
-    </Suspense>
+        </Routes>
+      </Suspense>
+    </ErrorBoundary>
   )
 }

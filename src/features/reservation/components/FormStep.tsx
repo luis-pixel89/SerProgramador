@@ -31,9 +31,11 @@ export function FormStep() {
       : undefined
 
   const ageError =
-    formData.age > 0 && formData.age < DEFAULT_RESERVATION_RULES.minAge
-      ? 'Debes tener al menos 15 años para participar.'
-      : undefined
+    formData.age === 0
+      ? 'Ingresa tu edad para continuar.'
+      : formData.age < DEFAULT_RESERVATION_RULES.minAge
+        ? `Debes tener al menos ${DEFAULT_RESERVATION_RULES.minAge} años para participar.`
+        : undefined
 
   return (
     <div className="space-y-6">

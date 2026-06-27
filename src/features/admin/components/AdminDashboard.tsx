@@ -126,6 +126,7 @@ export function AdminReservationsTable() {
   const { token } = useAuth()
   const queryClient = useQueryClient()
   const [page, setPage] = useState(1)
+  const [cancellingId, setCancellingId] = useState<string | null>(null)
   const [reassignTarget, setReassignTarget] = useState<{
     id: string
     fullName: string
@@ -145,11 +146,16 @@ export function AdminReservationsTable() {
   }
 
   const cancelMutation = useMutation({
-    mutationFn: (id: string) => updateReservation(token!, id, { status: 'cancelled' }),
+    mutationFn: async (id: string) => {
+      setCancellingId(id)
+      await updateReservation(token!, id, { status: 'cancelled' })
+    },
     onSuccess: () => {
+      setCancellingId(null)
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.reservations.all })
       queryClient.invalidateQueries({ queryKey: ['availability', 'all'] })
     },
+    onError: () => setCancellingId(null),
   })
 
   function handleExportExcel() {
@@ -295,9 +301,9 @@ export function AdminReservationsTable() {
                         size="sm"
                         variant="danger"
                         onClick={() => cancelMutation.mutate(reservation.id)}
-                        disabled={cancelMutation.isPending}
+                        disabled={cancellingId === reservation.id}
                       >
-                        {cancelMutation.isPending ? 'Cancelando...' : 'Cancelar'}
+                        {cancellingId === reservation.id ? 'Cancelando...' : 'Cancelar'}
                       </Button>
                     </div>
                   </td>

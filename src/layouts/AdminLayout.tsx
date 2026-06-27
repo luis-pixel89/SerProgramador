@@ -1,9 +1,9 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { Footer, Navbar } from '@/components'
 import { ROUTES } from '@/constants'
-import { AuthProvider, useAuth } from '@/features/admin/context'
+import { useAuth } from '@/features/admin/context'
 
-function AdminGuard() {
+export function AdminLayout() {
   const { isAuthenticated } = useAuth()
 
   if (!isAuthenticated) {
@@ -18,13 +18,5 @@ function AdminGuard() {
       </main>
       <Footer />
     </div>
-  )
-}
-
-export function AdminLayout() {
-  return (
-    <AuthProvider>
-      <AdminGuard />
-    </AuthProvider>
   )
 }

@@ -5,24 +5,23 @@ import QRCode from 'qrcode'
 import jsPDF from 'jspdf'
 import { Alert, Badge, Button, Card, CardContent, SectionTitle } from '@/components'
 import { ROUTES } from '@/constants'
-import { createReservation } from '@/services'
+import { ApiError, createReservation } from '@/services'
 import {
   CAMPAIGN_ADDRESS,
   CAMPAIGN_SCHEDULE,
 } from '../domain/campaignDisplay'
 import { useReservation } from '../hooks'
+import { toDateKey } from '../utils/dateUtils'
 import { formatDisplayDate } from '../utils/displayDate'
 
 const QR_DATA = 'https://maps.app.goo.gl/y9kpVCUan5joQ8C49'
 const PDF_FILENAME = 'pase-krakedev.pdf'
 
-const DUPLICATE_EMAIL_MESSAGE = 'Ya existe una reserva para esta persona'
-
 export function ConfirmationStep() {
   const navigate = useNavigate()
   const { participant, selectedDate, resetReservation } = useReservation()
   const qrCanvasRef = useRef<HTMLCanvasElement>(null)
-  const hasCalledApi = useRef(false)
+  const apiCalledRef = useRef(false)
   const [apiStatus, setApiStatus] = useState<'idle' | 'saving' | 'done' | 'error'>('idle')
   const [errorMessage, setErrorMessage] = useState('')
 
@@ -42,27 +41,23 @@ export function ConfirmationStep() {
   }, [])
 
   useEffect(() => {
-    if (!participant || !selectedDate || apiStatus !== 'idle' || hasCalledApi.current) return
+    if (!participant || !selectedDate || apiCalledRef.current) return
 
-    hasCalledApi.current = true
+    apiCalledRef.current = true
     setApiStatus('saving')
-    setErrorMessage('')
 
-    const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`
     const sanitizedPhone = participant.phone.replace(/\D/g, '')
-
-    const controller = new AbortController()
 
     createReservation({
       fullName: participant.fullName,
       email: participant.email,
       phone: sanitizedPhone,
       age: participant.age,
-      reservationDate: dateStr,
+      reservationDate: toDateKey(selectedDate),
     })
       .then(() => setApiStatus('done'))
       .catch((error: Error) => {
-        if (error.message === DUPLICATE_EMAIL_MESSAGE) {
+        if (error instanceof ApiError && error.status === 409) {
           resetReservation()
           navigate(ROUTES.HOME, { state: { error: error.message } })
           return
@@ -70,9 +65,7 @@ export function ConfirmationStep() {
         setApiStatus('error')
         setErrorMessage(error.message)
       })
-
-    return () => controller.abort()
-  }, [participant, selectedDate, apiStatus, navigate, resetReservation])
+  }, [participant, selectedDate, resetReservation, navigate])
 
   async function handleDownload() {
     const qrDataUrl = await QRCode.toDataURL(QR_DATA, {

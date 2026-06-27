@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { LogOut } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { Button, PageContainer, SectionTitle } from '@/components'
 import { ROUTES } from '@/constants'
 import { useAuth } from '@/features/admin/context'
@@ -10,11 +11,12 @@ import { AdminReservationsTable, AdminStatsGrid, AvailabilityCalendar } from '@/
 
 export default function AdminPage() {
   const { logout, token } = useAuth()
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
 
   function handleLogout() {
     logout()
-    window.location.href = ROUTES.HOME
+    navigate(ROUTES.HOME, { replace: true })
   }
 
   const toggleBlockMutation = useMutation({

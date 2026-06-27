@@ -1,4 +1,4 @@
-export { api, type ApiError } from './api'
+export { api, ApiError } from './api'
 export {
   loginAdmin,
   createReservation,
