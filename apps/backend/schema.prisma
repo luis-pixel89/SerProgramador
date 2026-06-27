@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ReservationStatus {
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum AdminRole {
+  ADMIN
+  SUPER_ADMIN
+}
+
+model Participant {
+  id           String        @id @default(cuid())
+  fullName     String
+  email        String        @unique
+  phone        String
+  age          Int
+  createdAt    DateTime      @default(now())
+  reservations Reservation[]
+
+  @@index([fullName])
+}
+
+model Reservation {
+  id                String            @id @default(cuid())
+  participantId     String
+  participant       Participant       @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  reservationDate   DateTime          @db.Date
+  reservationNumber String            @unique
+  status            ReservationStatus @default(CONFIRMED)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  deletedAt         DateTime?
+  ticket            Ticket?
+
+  @@index([reservationDate])
+  @@index([status])
+  @@index([reservationDate, status])
+  @@index([participantId])
+}
+
+model Ticket {
+  id            String      @id @default(cuid())
+  reservationId String      @unique
+  reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  ticketNumber  String      @unique
+  qrCode        String?
+  pdfUrl        String?
+  createdAt     DateTime    @default(now())
+
+  @@index([ticketNumber])
+}
+
+model Admin {
+  id           String    @id @default(cuid())
+  username     String    @unique
+  passwordHash String
+  role         AdminRole @default(ADMIN)
+  createdAt    DateTime  @default(now())
+}
+
+model BlockedDate {
+  id        String   @id @default(cuid())
+  date      DateTime @unique @db.Date
+  createdAt DateTime @default(now())
+}
+
+model ReservationCounter {
+  id        String   @id
+  sequence  Int
+  updatedAt DateTime @updatedAt
+}

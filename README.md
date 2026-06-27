@@ -1,32 +1,61 @@
-# React + TypeScript + Vite
+# Ser Programador — Krakedev
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Aplicación web para la campaña **Sé Programador por un Día** de Krakedev. Sistema de reserva de cupos con calendario interactivo, generación de tickets (PDF + QR), y panel de administración protegido con JWT.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+| Capa | Tecnología |
+|------|-----------|
+| Frontend | React 19 + TypeScript 6 + Vite 8 |
+| Estilos | Tailwind CSS 4 |
+| Routing | React Router 7 |
+| Estado | React Context + useReducer, TanStack React Query 5 |
+| HTTP | Axios |
+| Backend | Express 5 + Prisma 6 + PostgreSQL 16 |
+| PDF | jsPDF |
+| QR | qrcode |
+| Iconos | Lucide React |
+| Linter | Oxlint |
 
-## React Compiler
+## Funcionalidades
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Landing page** con temática oscura y llamativo splash animado (KrakeDev)
+- **Calendario interactivo** con disponibilidad en tiempo real (cupos: 2/día)
+- **Formulario de registro** con validación en frontend
+- **Confirmación** con código QR (Google Maps) y descarga de PDF
+- **Cancelación vía WhatsApp** con mensaje predefinido
+- **Panel admin** con login JWT, dashboard de estadísticas y tabla paginada de reservas
+- **Backend API** con Express + Prisma + PostgreSQL
 
-## Expanding the Oxlint configuration
+## Rutas
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+| Ruta | Descripción |
+|------|-------------|
+| `/` | Página principal con flujo de reserva |
+| `/admin` | Panel de administración (protegido) |
+| `/admin/login` | Login de administrador |
+| `/krakedev` | Splash animado de KrakeDev |
+| `/krakedev/home` | Hero page de KrakeDev |
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+## Inicio rápido
+
+```bash
+# Instalar dependencias del frontend (raíz)
+npm install
+
+# Iniciar frontend en desarrollo
+npm run dev            # http://localhost:5173
+
+# El backend debe estar corriendo en puerto 3001
+# (compilado previamente en apps/backend/dist/)
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Scripts
+
+| Comando | Descripción |
+|---------|-------------|
+| `npm run dev` | Inicia Vite dev server (frontend solo) |
+| `npm run dev:full` | Frontend + backend simultáneamente |
+| `npm run build` | Type-check + build de producción |
+| `npm run lint` | Oxlint |
+| `npm run preview` | Vista previa del build |

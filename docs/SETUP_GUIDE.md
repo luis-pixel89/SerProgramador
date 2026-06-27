@@ -10,8 +10,7 @@ Guía paso a paso para instalar, configurar y ejecutar el proyecto **Ser Program
 |-------------|---------------|----------------|
 | Node.js | 20.x | `node --version` |
 | npm | 10.x | `npm --version` |
-| Docker Desktop | 4.x | `docker --version && docker compose version` |
-| Git | 2.x | `git --version` |
+| PostgreSQL | 16 | `psql --version` |
 
 ---
 
@@ -30,20 +29,19 @@ cd SerProgramador
 npm install
 ```
 
-Esto instala las dependencias del monorepo raíz y de ambos workspaces (`apps/frontend` y `apps/backend`).
+Las dependencias del frontend se instalan desde la raíz. El backend en `apps/backend/` usa su propio `node_modules` ya compilado.
 
 ---
 
 ## 3. Variables de entorno
 
-Copia los archivos de ejemplo:
+### Frontend (raíz)
+
+Copia el archivo de ejemplo:
 
 ```bash
-cp apps/frontend/.env.example apps/frontend/.env
-cp apps/backend/.env.example apps/backend/.env
+cp .env.example .env
 ```
-
-### Frontend (`apps/frontend/.env`)
 
 | Variable | Valor por defecto | Descripción |
 |----------|------------------|-------------|
@@ -51,70 +49,57 @@ cp apps/backend/.env.example apps/backend/.env
 
 ### Backend (`apps/backend/.env`)
 
-| Variable | Valor por defecto | Descripción |
-|----------|------------------|-------------|
-| `DATABASE_URL` | `postgresql://postgres:postgres@localhost:5432/serprogramador` | Conexión PostgreSQL |
-| `JWT_SECRET` | *(generar uno)* | Clave secreta para JWT — usar `openssl rand -hex 32` |
+El archivo ya existe con valores preconfigurados:
+
+| Variable | Valor | Descripción |
+|----------|-------|-------------|
+| `DATABASE_URL` | `postgresql://postgres:4189@localhost:5432/serprogramador` | Conexión PostgreSQL |
+| `PORT` | `3001` | Puerto del servidor |
+| `JWT_SECRET` | `dev-secret-key-min-16-chars` | Clave secreta para JWT |
+| `JWT_EXPIRES_IN` | `8h` | Expiración del token |
 | `CORS_ORIGIN` | `http://localhost:5173` | Origen permitido para CORS |
+| `MAX_SLOTS_PER_DAY` | `2` | Cupos máximos por día |
+| `CAMPAIGN_YEAR` | `2026` | Año de la campaña |
+| `ALLOWED_MONTHS` | `7,8` | Meses habilitados (Julio, Agosto) |
+| `MIN_AGE` | `15` | Edad mínima |
+| `ADMIN_USERNAME` | `admin` | Usuario admin |
+| `ADMIN_PASSWORD` | `admin123` | Contraseña admin |
 
 ---
 
 ## 4. Base de datos
 
-### 4.1 Iniciar PostgreSQL con Docker
+Necesitas una instancia de PostgreSQL 16 corriendo en `localhost:5432` con:
+
+- **Usuario:** `postgres`
+- **Contraseña:** `4189`
+- **Base de datos:** `serprogramador`
+
+Puedes crearla con:
 
 ```bash
-docker compose up -d
-# Puerto: 5432
-# User: postgres
-# Password: postgres
-# DB: serprogramador
+psql -U postgres -c "CREATE DATABASE serprogramador;"
 ```
 
-### 4.2 Ejecutar migraciones
-
-```bash
-npm run db:migrate
-```
-
-Crea las tablas: `Participant`, `Reservation`, `Ticket`, `Admin`, `BlockedDate`.
-
-### 4.3 Poblar datos de prueba
-
-```bash
-npm run db:seed
-```
-
-Carga datos de ejemplo:
-- Admin por defecto: `admin` / `admin123`
-- Participantes de prueba
-- Reservas en distintas fechas
-- Disponibilidad para Julio y Agosto 2026
+> La estructura de tablas y datos de prueba ya están precargados en la base de datos.
 
 ---
 
 ## 5. Ejecutar la aplicación
 
-### Desarrollo (ambos simultáneamente)
+### Backend
+
+```bash
+cd apps/backend
+node dist/server.js
+# Servidor en http://localhost:3001
+```
+
+### Frontend (desde la raíz, en otra terminal)
 
 ```bash
 npm run dev
-```
-
-- Frontend: `http://localhost:5173`
-- Backend: `http://localhost:3001`
-- API base: `http://localhost:3001/api/v1`
-
-### Solo frontend
-
-```bash
-npm run dev:frontend
-```
-
-### Solo backend
-
-```bash
-npm run dev:backend
+# Servidor en http://localhost:5173
 ```
 
 ---
@@ -134,81 +119,82 @@ curl http://localhost:3001/health
 curl http://localhost:3001/api/v1/availability?month=7
 ```
 
+### Login admin
+
+```bash
+curl -X POST http://localhost:3001/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin"}'
+# → {"token":"eyJ...","expiresIn":"8h","admin":{...}}
+```
+
 ### Abrir frontend
 
-Ve a `http://localhost:5173` — deberías ver la landing page de la campaña.
+Ve a `http://localhost:5173` — deberías ver la landing page con el flujo de reserva.
+
+---
+
+## Rutas disponibles
+
+| Ruta | Descripción |
+|------|-------------|
+| `/` | Página principal con flujo de reserva wizard |
+| `/admin/login` | Login de administrador |
+| `/admin` | Panel de administración (requiere login) |
+| `/krakedev` | Splash animado de KrakeDev |
+| `/krakedev/home` | Hero page de KrakeDev |
 
 ---
 
 ## Solución de problemas
 
-### Puerto 5432 ocupado
-
-```bash
-# Verificar qué usa el puerto
-netstat -ano | findstr :5432
-# Cambiar puerto en docker-compose.yml y DATABASE_URL
-```
-
-### Prisma Client no encontrado
-
-```bash
-npm run db:generate
-```
-
 ### Error de conexión a BD
 
-1. Verifica que Docker esté corriendo
-2. Verifica `docker ps` para confirmar el contenedor
-3. Verifica `DATABASE_URL` en `apps/backend/.env`
-
-### Puertos 5173 o 3001 ocupados
-
 ```bash
-# Verificar proceso en el puerto
-netstat -ano | findstr :5173
-# Vite usa el siguiente disponible automáticamente
+# Verificar que PostgreSQL esté corriendo
+psql -U postgres -c "SELECT 1"
+
+# Verificar DATABASE_URL en apps/backend/.env
 ```
 
-### Tests fallan
+### Puerto 3001 ocupado
 
 ```bash
-npm run quality
-# Asegúrate de que la BD esté migrada y seedeada
+netstat -ano | findstr :3001
 ```
+
+### Puerto 5173 ocupado
+
+Vite usa el siguiente puerto disponible automáticamente.
+
+### Error CORS
+
+Verifica que `CORS_ORIGIN` en `apps/backend/.env` coincida con la URL del frontend (`http://localhost:5173`).
 
 ---
 
-## Scripts útiles
-
-| Comando | Descripción |
-|---------|-------------|
-| `npm run quality` | Lint + typecheck + tests (todo junto) |
-| `npm run db:reset` | Reset completo de BD (drop + migrate + seed) |
-| `npm run format` | Formatear código con Prettier |
-| `npm run typecheck` | Verificar tipos TypeScript |
-
----
-
-## Estructura de archivos de configuración
+## Estructura de archivos relevante
 
 ```
 SerProgramador/
-├── apps/
-│   ├── frontend/
-│   │   ├── .env.example
-│   │   ├── .env              ← crear localmente
-│   │   ├── vite.config.ts
-│   │   └── tsconfig.json
-│   └── backend/
-│       ├── .env.example
-│       ├── .env              ← crear localmente
-│       ├── prisma/
-│       │   └── schema.prisma
-│       └── tsconfig.json
-├── docker-compose.yml
-├── .oxlintrc.json
-├── .prettierrc.json
-├── commitlint.config.js
-└── .gitignore
+├── .env.example
+├── src/                     ← Frontend (React)
+│   ├── components/ui/       ← Componentes atómicos
+│   ├── constants/           ← Rutas, API endpoints
+│   ├── contexts/            ← Proveedores globales
+│   ├── features/            ← Módulos por dominio
+│   │   ├── admin/           ← Panel admin
+│   │   ├── krakedev/        ← Branding KrakeDev
+│   │   └── reservation/     ← Flujo de reserva
+│   ├── layouts/             ← Layouts (Main, Admin)
+│   ├── pages/               ← Páginas por ruta
+│   ├── routes/              ← Configuración de rutas
+│   └── services/            ← Servicios API (Axios)
+├── apps/backend/            ← Backend (Express + Prisma)
+│   ├── .env
+│   ├── package.json
+│   └── dist/                ← Código compilado
+├── package.json
+├── vite.config.ts
+└── tsconfig.json
 ```

@@ -4,5 +4,5 @@ export const API_CONFIG = {
 } as const
 
 export const API_ENDPOINTS = {
-  RESERVATIONS: '/reservations',
+  RESERVATIONS: '/api/v1/reservations',
 } as const

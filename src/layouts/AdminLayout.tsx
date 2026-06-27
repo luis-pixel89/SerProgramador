@@ -1,7 +1,15 @@
-import { Outlet } from 'react-router-dom'
+import { Navigate, Outlet } from 'react-router-dom'
 import { Footer, Navbar } from '@/components'
+import { ROUTES } from '@/constants'
+import { AuthProvider, useAuth } from '@/features/admin/context'
 
-export function AdminLayout() {
+function AdminGuard() {
+  const { isAuthenticated } = useAuth()
+
+  if (!isAuthenticated) {
+    return <Navigate to={ROUTES.ADMIN_LOGIN} replace />
+  }
+
   return (
     <div className="flex min-h-dvh flex-col bg-slate-50/50">
       <Navbar variant="admin" />
@@ -10,5 +18,13 @@ export function AdminLayout() {
       </main>
       <Footer />
     </div>
+  )
+}
+
+export function AdminLayout() {
+  return (
+    <AuthProvider>
+      <AdminGuard />
+    </AuthProvider>
   )
 }
