@@ -36,7 +36,7 @@ function HomePage() {
 }
 ```
 
-El flujo está envuelto en `ReservationProvider` (Context + useReducer) que maneja el estado del wizard paso a paso (4 pasos: Campaign → Calendar → Form → Confirmation).
+El flujo está envuelto en `ReservationProvider` (Context + useReducer) que maneja el estado del wizard paso a paso (3 pasos: Calendar → Form → Confirmation).
 
 **Componente:** `src/features/reservation/components/LandingModal.tsx`
 
@@ -185,20 +185,27 @@ const { data: reservations, isLoading: tableLoading } = useQuery({
 
 **Archivo:** `src/layouts/AdminLayout.tsx`
 
+El `AuthProvider` está a nivel global (`AppProviders.tsx`). `AdminLayout` usa `useAuth()` directamente y un `useEffect` para redirigir a `/admin/login` cuando no hay sesión:
+
 ```typescript
-function AdminLayout() {
+export function AdminLayout() {
+  const { isAuthenticated } = useAuth()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!isAuthenticated) navigate(ROUTES.ADMIN_LOGIN, { replace: true })
+  }, [isAuthenticated, navigate])
+
+  if (!isAuthenticated) return null
+
   return (
-    <AuthProvider>
-      <AuthGuard>
-        <Navbar variant="admin" />
-        <Outlet />
-        <Footer />
-      </AuthGuard>
-    </AuthProvider>
+    <div className="flex min-h-dvh flex-col bg-slate-50/50">
+      <Navbar variant="admin" />
+      <main className="flex-1"><Outlet /></main>
+      <Footer />
+    </div>
   )
 }
-
-// AuthGuard redirige a /admin/login si no hay token
 ```
 
 ---

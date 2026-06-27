@@ -5,7 +5,7 @@ import { ReservationStep } from '../types'
 
 export const initialReservationState: ReservationState = {
   hasEnteredWizard: false,
-  step: ReservationStep.Campaign,
+  step: ReservationStep.Calendar,
   selectedDate: null,
   participant: null,
   ticket: null,
@@ -36,7 +36,6 @@ export function canAdvanceToConfirmation(state: ReservationState): boolean {
 
 export function canGoToStep(state: ReservationState, step: ReservationStep): boolean {
   switch (step) {
-    case ReservationStep.Campaign:
     case ReservationStep.Calendar:
       return true
     case ReservationStep.Form:

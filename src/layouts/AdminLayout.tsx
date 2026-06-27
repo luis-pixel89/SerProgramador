@@ -1,13 +1,21 @@
-import { Navigate, Outlet } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { Footer, Navbar } from '@/components'
 import { ROUTES } from '@/constants'
 import { useAuth } from '@/features/admin/context'
 
 export function AdminLayout() {
   const { isAuthenticated } = useAuth()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate(ROUTES.ADMIN_LOGIN, { replace: true })
+    }
+  }, [isAuthenticated, navigate])
 
   if (!isAuthenticated) {
-    return <Navigate to={ROUTES.ADMIN_LOGIN} replace />
+    return null
   }
 
   return (

@@ -29,7 +29,7 @@ export function reservationReducer(
       return {
         ...state,
         hasEnteredWizard: true,
-        step: ReservationStep.Campaign,
+        step: ReservationStep.Calendar,
       }
 
     case 'NEXT_STEP': {

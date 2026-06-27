@@ -1,9 +1,8 @@
-import { Button, Card, CardContent, PageContainer } from '@/components'
+import { Card, CardContent, PageContainer } from '@/components'
 import { ReservationProvider } from '../context'
 import { useReservation } from '../hooks'
 import { ReservationStep } from '../types'
 import { CalendarStep } from './CalendarStep'
-import { CampaignInfoStep } from './CampaignInfoStep'
 import { ConfirmationStep } from './ConfirmationStep'
 import { FormStep } from './FormStep'
 import { LandingModal } from './LandingModal'
@@ -18,7 +17,7 @@ export function ReservationFlow() {
 }
 
 function ReservationFlowContent() {
-  const { hasEnteredWizard, step, nextStep } = useReservation()
+  const { hasEnteredWizard, step } = useReservation()
 
   if (!hasEnteredWizard) {
     return (
@@ -35,17 +34,6 @@ function ReservationFlowContent() {
 
         <Card glass className="overflow-hidden shadow-lg shadow-slate-900/5">
           <CardContent className="p-4 sm:p-8">
-            {step === ReservationStep.Campaign && (
-              <>
-                <CampaignInfoStep />
-                <div className="mt-8 flex justify-end">
-                  <Button size="lg" onClick={nextStep}>
-                    Continuar al calendario
-                  </Button>
-                </div>
-              </>
-            )}
-
             {step === ReservationStep.Calendar && <CalendarStep />}
 
             {step === ReservationStep.Form && <FormStep />}

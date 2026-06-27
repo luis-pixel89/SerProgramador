@@ -1,5 +1,4 @@
 export { LandingModal } from './LandingModal'
-export { CampaignInfoStep } from './CampaignInfoStep'
 export { WizardStepper } from './WizardStepper'
 export { CalendarStep } from './CalendarStep'
 export { FormStep } from './FormStep'

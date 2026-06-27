@@ -25,7 +25,8 @@ Aplicación web para la campaña **Sé Programador por un Día** de Krakedev. Si
 - **Confirmación** con código QR (Google Maps) y descarga de PDF
 - **Cancelación vía WhatsApp** con mensaje predefinido
 - **Panel admin** con login JWT, dashboard de estadísticas y tabla paginada de reservas
-- **Backend API** con Express + Prisma + PostgreSQL
+- **3 pasos**: Calendario → Formulario → Confirmación
+- **Error Boundary** que evita pantalla blanca en caso de error
 
 ## Rutas
 

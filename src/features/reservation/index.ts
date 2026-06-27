@@ -6,7 +6,6 @@ export * from './context'
 export * from './hooks'
 export {
   LandingModal,
-  CampaignInfoStep,
   WizardStepper,
   CalendarStep,
   FormStep,

@@ -123,7 +123,7 @@ src/
 │   └── routes.ts                ← ROUTES object
 │
 ├── context/                     ← Providers globales
-│   ├── AppProviders.tsx         ← QueryClientProvider wrapper
+│   ├── AppProviders.tsx         ← QueryClientProvider + AuthProvider wrapper
 │   └── queryClient.ts           ← TanStack Query config
 │
 ├── features/                    ← Módulos por dominio
@@ -256,14 +256,14 @@ AuthContext (AuthProvider)
 └── logout()                      ← Limpia token y sessionStorage
 ```
 
-Usado en: `AdminLayout.tsx` (AuthGuard redirige a `/admin/login` si no autenticado).
+Usado en: `AppProviders.tsx` (raíz) y `AdminLayout.tsx` (redirige a `/admin/login` si no autenticado vía `useEffect`).
 
 ### ReservationContext (wizard state machine)
 
 ```
 ReservationProvider (useReducer)
 ├── state: ReservationState
-│   ├── currentStep: number       ← 0-3
+│   ├── currentStep: number       ← 0-2
 │   ├── selectedDate: string|null
 │   ├── participant: Participant
 │   └── ticket: TicketSummary|null

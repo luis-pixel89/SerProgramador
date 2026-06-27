@@ -3,10 +3,9 @@ import { useReservation } from '../hooks'
 import { ReservationStep } from '../types'
 
 const steps = [
-  { step: ReservationStep.Campaign, number: 1, label: 'Campaña' },
-  { step: ReservationStep.Calendar, number: 2, label: 'Calendario' },
-  { step: ReservationStep.Form, number: 3, label: 'Formulario' },
-  { step: ReservationStep.Confirmation, number: 4, label: 'Confirmación' },
+  { step: ReservationStep.Calendar, number: 1, label: 'Calendario' },
+  { step: ReservationStep.Form, number: 2, label: 'Formulario' },
+  { step: ReservationStep.Confirmation, number: 3, label: 'Confirmación' },
 ]
 
 export function WizardStepper() {

@@ -17,7 +17,7 @@ export function CalendarStep() {
   const {
     selectedDate,
     setSelectedDate,
-    previousStep,
+    resetReservation,
     nextStep,
     canAdvanceFromCalendar,
   } = useReservation()
@@ -88,8 +88,8 @@ export function CalendarStep() {
       />
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
-        <Button variant="ghost" onClick={previousStep}>
-          Anterior
+        <Button variant="ghost" onClick={resetReservation}>
+          Cancelar
         </Button>
         <Button size="lg" onClick={nextStep} disabled={!canAdvanceFromCalendar}>
           Continuar

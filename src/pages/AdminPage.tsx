@@ -16,7 +16,7 @@ export default function AdminPage() {
 
   function handleLogout() {
     logout()
-    navigate(ROUTES.HOME, { replace: true })
+    setTimeout(() => navigate(ROUTES.HOME, { replace: true }), 0)
   }
 
   const toggleBlockMutation = useMutation({
