@@ -23,6 +23,6 @@ export { getReservationStatus, isDateSelectable } from './statusUtils'
 
 export { calculateAvailability } from './calculateAvailability'
 
-export { generateCalendar } from './generateCalendar'
+export { generateCalendar, buildCalendarFromApi } from './generateCalendar'
 
 export { formatDisplayDate, formatShortDate } from './displayDate'

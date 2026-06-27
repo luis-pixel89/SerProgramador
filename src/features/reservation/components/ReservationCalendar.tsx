@@ -1,4 +1,4 @@
-import type { CalendarMonth, Reservation } from '../types'
+import type { CalendarMonth, CalendarMonthView, Reservation } from '../types'
 import { useReservationCalendar } from '../hooks'
 import { CalendarMonthGrid } from './CalendarMonthGrid'
 
@@ -7,6 +7,7 @@ export interface ReservationCalendarProps {
   months: CalendarMonth[]
   maxSlotsPerDay: number
   onSelectDate: (date: Date) => void
+  calendarMonths?: CalendarMonthView[]
 }
 
 export function ReservationCalendar({
@@ -14,16 +15,19 @@ export function ReservationCalendar({
   months,
   maxSlotsPerDay,
   onSelectDate,
+  calendarMonths: prebuiltMonths,
 }: ReservationCalendarProps) {
-  const calendarMonths = useReservationCalendar({
+  const computedMonths = useReservationCalendar({
     reservations,
     months,
     maxSlotsPerDay,
   })
 
+  const displayMonths = prebuiltMonths ?? computedMonths
+
   return (
     <div className="grid gap-6 xl:grid-cols-2">
-      {calendarMonths.map((month) => (
+      {displayMonths.map((month) => (
         <CalendarMonthGrid
           key={`${month.year}-${month.month}`}
           month={month}

@@ -1,10 +1,17 @@
+import { useQuery } from '@tanstack/react-query'
+import { AlertCircle, Loader2, RefreshCw } from 'lucide-react'
 import { Button, SectionTitle } from '@/components'
 import { cn } from '@/utils'
-import { CAMPAIGN_MONTHS, DEFAULT_RESERVATION_RULES } from '../domain/reservationConfig'
+import { fetchAvailability } from '@/services'
 import { useReservation } from '../hooks'
-import { mockReservations } from '../mocks/mockReservations'
 import { formatDisplayDate } from '../utils/displayDate'
+import { buildCalendarFromApi } from '../utils'
 import { ReservationCalendar } from './ReservationCalendar'
+
+const CAMPAIGN_MONTHS = [
+  { year: 2026, month: 7, label: 'Julio 2026' },
+  { year: 2026, month: 8, label: 'Agosto 2026' },
+]
 
 export function CalendarStep() {
   const {
@@ -15,11 +22,46 @@ export function CalendarStep() {
     canAdvanceFromCalendar,
   } = useReservation()
 
+  const { data: availability, isLoading, isError, refetch } = useQuery({
+    queryKey: ['availability', 'all'],
+    queryFn: () => fetchAvailability(),
+    staleTime: 30_000,
+    retry: 1,
+  })
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="size-8 animate-spin text-slate-400" />
+      </div>
+    )
+  }
+
+  if (isError || !availability) {
+    return (
+      <div className="flex flex-col items-center gap-4 py-20">
+        <AlertCircle className="size-10 text-red-400" />
+        <p className="text-sm text-slate-500">
+          No se pudo cargar la disponibilidad. Verifica que el servidor esté funcionando.
+        </p>
+        <Button variant="outline" size="sm" onClick={() => refetch()}>
+          <RefreshCw className="mr-2 size-4" />
+          Reintentar
+        </Button>
+      </div>
+    )
+  }
+
+  const maxSlotsPerDay = availability.maxSlotsPerDay
+  const calendarMonths = buildCalendarFromApi(CAMPAIGN_MONTHS, availability.days)
+
+  const monthList = CAMPAIGN_MONTHS.map((m) => m.label).join(', ')
+
   return (
     <div className="space-y-6">
       <SectionTitle
         title="Selecciona tu fecha"
-        description="Consulta la disponibilidad de cupos para Julio y Agosto. Solo días hábiles."
+        description={`Consulta la disponibilidad de cupos para ${monthList}. Solo días hábiles.`}
       />
 
       <div className="flex flex-wrap gap-3">
@@ -37,10 +79,11 @@ export function CalendarStep() {
       )}
 
       <ReservationCalendar
-        reservations={mockReservations}
+        reservations={[]}
         months={CAMPAIGN_MONTHS}
-        maxSlotsPerDay={DEFAULT_RESERVATION_RULES.maxSlotsPerDay}
+        maxSlotsPerDay={maxSlotsPerDay}
         onSelectDate={setSelectedDate}
+        calendarMonths={calendarMonths}
       />
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">

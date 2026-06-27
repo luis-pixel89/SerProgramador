@@ -118,17 +118,31 @@ export async function deleteReservation(
   })
 }
 
+export interface CampaignConfig {
+  maxSlotsPerDay: number
+  campaignYear: number
+  allowedMonths: number[]
+  minAge: number
+}
+
+export async function fetchCampaignConfig(): Promise<CampaignConfig> {
+  const { data } = await api.get('/api/v1/config')
+  return data
+}
+
 export interface AvailabilityDay {
   date: string
   status: 'available' | 'last-spot' | 'full' | 'weekend' | 'past' | 'disabled' | 'empty'
+  bookedCount: number
   remainingSlots: number
+  maxSlots: number
   isSelectable: boolean
 }
 
 export async function fetchAvailability(
   month?: number,
   year?: number,
-): Promise<{ days: AvailabilityDay[] }> {
+): Promise<{ maxSlotsPerDay: number; days: AvailabilityDay[] }> {
   const { data } = await api.get('/api/v1/availability', { params: { month, year } })
   return data
 }

@@ -7,17 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum ReservationStatus {
-  CONFIRMED
-  CANCELLED
-  COMPLETED
-}
-
-enum AdminRole {
-  ADMIN
-  SUPER_ADMIN
-}
-
 model Participant {
   id           String        @id @default(cuid())
   fullName     String
@@ -33,13 +22,13 @@ model Participant {
 model Reservation {
   id                String            @id @default(cuid())
   participantId     String
-  participant       Participant       @relation(fields: [participantId], references: [id], onDelete: Cascade)
   reservationDate   DateTime          @db.Date
   reservationNumber String            @unique
   status            ReservationStatus @default(CONFIRMED)
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
   deletedAt         DateTime?
+  participant       Participant       @relation(fields: [participantId], references: [id], onDelete: Cascade)
   ticket            Ticket?
 
   @@index([reservationDate])
@@ -51,21 +40,13 @@ model Reservation {
 model Ticket {
   id            String      @id @default(cuid())
   reservationId String      @unique
-  reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
   ticketNumber  String      @unique
   qrCode        String?
   pdfUrl        String?
   createdAt     DateTime    @default(now())
+  reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
 
   @@index([ticketNumber])
-}
-
-model Admin {
-  id           String    @id @default(cuid())
-  username     String    @unique
-  passwordHash String
-  role         AdminRole @default(ADMIN)
-  createdAt    DateTime  @default(now())
 }
 
 model BlockedDate {
@@ -79,3 +60,10 @@ model ReservationCounter {
   sequence  Int
   updatedAt DateTime @updatedAt
 }
+
+enum ReservationStatus {
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
