@@ -141,12 +141,14 @@ export function AdminReservationsTable() {
 
   function handleReassigned() {
     queryClient.invalidateQueries({ queryKey: QUERY_KEYS.reservations.all })
+    queryClient.invalidateQueries({ queryKey: ['availability', 'all'] })
   }
 
   const cancelMutation = useMutation({
     mutationFn: (id: string) => updateReservation(token!, id, { status: 'cancelled' }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.reservations.all })
+      queryClient.invalidateQueries({ queryKey: ['availability', 'all'] })
     },
   })
 

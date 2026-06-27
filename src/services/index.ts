@@ -9,6 +9,8 @@ export {
   fetchAvailability,
   fetchCampaignConfig,
   reassignReservationDate,
+  blockDate,
+  unblockDate,
   type CampaignConfig,
   type CreateReservationData,
   type CreateReservationResult,

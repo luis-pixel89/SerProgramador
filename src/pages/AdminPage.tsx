@@ -1,17 +1,36 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { LogOut } from 'lucide-react'
 import { Button, PageContainer, SectionTitle } from '@/components'
 import { ROUTES } from '@/constants'
 import { useAuth } from '@/features/admin/context'
+import { blockDate, unblockDate } from '@/services'
+import type { AvailabilityDay } from '@/services'
 
 import { AdminReservationsTable, AdminStatsGrid, AvailabilityCalendar } from '@/features/admin/components'
 
 export default function AdminPage() {
-  const { logout } = useAuth()
+  const { logout, token } = useAuth()
+  const queryClient = useQueryClient()
 
   function handleLogout() {
     logout()
     window.location.href = ROUTES.HOME
   }
+
+  const toggleBlockMutation = useMutation({
+    mutationFn: async (date: string) => {
+      const days = queryClient.getQueryData<{ days: AvailabilityDay[] }>(['availability', 'all'])?.days ?? []
+      const day = days.find((d: AvailabilityDay) => d.date === date)
+      if (day?.isBlocked) {
+        await unblockDate(token!, date)
+      } else {
+        await blockDate(token!, date)
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['availability', 'all'] })
+    },
+  })
 
   return (
     <PageContainer size="xl" className="space-y-8 py-8 sm:py-10">
@@ -31,7 +50,9 @@ export default function AdminPage() {
           title="Disponibilidad de fechas"
           description="Visualización de todos los cupos disponibles para Julio y Agosto 2026."
         />
-        <AvailabilityCalendar />
+        <AvailabilityCalendar
+          onToggleBlock={(date) => toggleBlockMutation.mutate(date)}
+        />
       </div>
 
       <AdminReservationsTable />

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Lock, Unlock } from 'lucide-react'
 import { Alert, Button, Card, CardContent } from '@/components'
 import { cn } from '@/utils'
 import { fetchAvailability } from '@/services'
@@ -13,12 +13,14 @@ const STATUS_STYLES: Record<string, { bg: string; text: string; border: string; 
   past: { bg: 'bg-slate-50', text: 'text-slate-300', border: 'border-slate-100', label: '' },
   disabled: { bg: 'bg-slate-50', text: 'text-slate-300', border: 'border-slate-100', label: '' },
   empty: { bg: 'bg-transparent', text: 'text-transparent', border: 'border-transparent', label: '' },
+  blocked: { bg: 'bg-violet-100', text: 'text-violet-700', border: 'border-violet-300', label: 'Bloqueado' },
 }
 
 const LEGEND = [
   { bg: 'bg-emerald-50 border-emerald-200', label: 'Disponible' },
   { bg: 'bg-amber-50 border-amber-200', label: 'Último cupo' },
   { bg: 'bg-red-50 border-red-100', label: 'Completo' },
+  { bg: 'bg-violet-100 border-violet-300', label: 'Bloqueado' },
   { bg: 'bg-slate-50 border-slate-100', label: 'No disponible' },
 ]
 
@@ -40,6 +42,7 @@ interface AvailabilityCalendarProps {
   onSelect?: (date: string) => void
   onCancel?: () => void
   isPending?: boolean
+  onToggleBlock?: (date: string) => void
 }
 
 function MonthGrid({
@@ -47,11 +50,13 @@ function MonthGrid({
   currentDate,
   selectedDate,
   onSelect,
+  onToggleBlock,
 }: {
   days: AvailabilityDay[]
   currentDate?: string | null
   selectedDate?: string | null
   onSelect?: (date: string) => void
+  onToggleBlock?: (date: string) => void
 }) {
   const day = days[0]
   if (!day) return null
@@ -80,25 +85,33 @@ function MonthGrid({
         {days.map((day: AvailabilityDay) => {
           const isCurrent = currentDate != null && day.date === currentDate
           const isSelected = selectedDate != null && day.date === selectedDate
-          const style = STATUS_STYLES[day.status] ?? STATUS_STYLES.disabled
+          const style = STATUS_STYLES[day.isBlocked ? 'blocked' : day.status] ?? STATUS_STYLES.disabled
           const canClick = !!onSelect && day.isSelectable && !isCurrent
+          const canToggleBlock = !!onToggleBlock && !isCurrent && day.status !== 'weekend' && day.status !== 'past' && day.status !== 'disabled' && day.status !== 'empty'
 
           return (
             <button
               key={day.date}
               type="button"
-              disabled={!canClick}
-              title={isCurrent ? 'Fecha actual' : style.label || day.status}
-              onClick={() => onSelect?.(day.date)}
+              disabled={!canClick && !canToggleBlock}
+              title={isCurrent ? 'Fecha actual' : day.isBlocked ? 'Bloqueado - Haz clic para desbloquear' : style.label || day.status}
+              onClick={() => {
+                if (canToggleBlock) {
+                  onToggleBlock?.(day.date)
+                } else {
+                  onSelect?.(day.date)
+                }
+              }}
               className={cn(
                 'relative flex flex-col items-center rounded-md border px-0.5 py-1.5 text-[11px] transition-all',
                 isSelected && 'ring-2 ring-violet-500 ring-offset-1',
                 isCurrent && 'ring-2 ring-slate-400 ring-offset-1',
                 canClick && !isSelected && 'cursor-pointer hover:shadow-sm',
+                canToggleBlock && 'cursor-pointer hover:shadow-sm',
                 style.bg,
                 style.text,
                 style.border,
-                !canClick && !isCurrent && 'cursor-default',
+                !canClick && !canToggleBlock && !isCurrent && 'cursor-default',
               )}
             >
               <span className={cn('font-medium', isCurrent && 'line-through')}>
@@ -107,8 +120,13 @@ function MonthGrid({
               {isCurrent && (
                 <span className="mt-0.5 leading-none text-[8px] font-medium text-slate-400">Actual</span>
               )}
-              {day.status === 'last-spot' && !isCurrent && (
+              {day.status === 'last-spot' && !isCurrent && !day.isBlocked && (
                 <span className="mt-0.5 leading-none text-[8px] font-medium text-amber-600">1 cupo</span>
+              )}
+              {canToggleBlock && (
+                day.isBlocked
+                  ? <Lock className="mt-0.5 size-3 text-violet-600" />
+                  : <Unlock className="mt-0.5 size-3 text-slate-400" />
               )}
             </button>
           )
@@ -124,10 +142,12 @@ export default function AvailabilityCalendar({
   onSelect,
   onCancel,
   isPending,
+  onToggleBlock,
 }: AvailabilityCalendarProps) {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['availability', 'all'],
     queryFn: () => fetchAvailability(),
+    refetchInterval: 30_000,
   })
 
   if (isLoading) {
@@ -176,6 +196,7 @@ export default function AvailabilityCalendar({
               currentDate={currentDate}
               selectedDate={selectedDate}
               onSelect={onSelect}
+              onToggleBlock={onToggleBlock}
             />
           ))}
         </div>
@@ -189,9 +210,11 @@ export default function AvailabilityCalendar({
               </div>
             ))}
           </div>
-          <Button variant="outline" onClick={onCancel} disabled={isPending}>
-            Cancelar
-          </Button>
+          {onCancel && (
+            <Button variant="outline" onClick={onCancel} disabled={isPending}>
+              Cancelar
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>

@@ -132,11 +132,12 @@ export async function fetchCampaignConfig(): Promise<CampaignConfig> {
 
 export interface AvailabilityDay {
   date: string
-  status: 'available' | 'last-spot' | 'full' | 'weekend' | 'past' | 'disabled' | 'empty'
+  status: 'available' | 'last-spot' | 'full' | 'weekend' | 'past' | 'disabled' | 'empty' | 'blocked'
   bookedCount: number
   remainingSlots: number
   maxSlots: number
   isSelectable: boolean
+  isBlocked?: boolean
 }
 
 export async function fetchAvailability(
@@ -145,6 +146,24 @@ export async function fetchAvailability(
 ): Promise<{ maxSlotsPerDay: number; days: AvailabilityDay[] }> {
   const { data } = await api.get('/api/v1/availability', { params: { month, year } })
   return data
+}
+
+export async function blockDate(
+  token: string,
+  date: string,
+): Promise<void> {
+  await api.post(`/api/v1/admin/blocked-dates/${date}`, null, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
+
+export async function unblockDate(
+  token: string,
+  date: string,
+): Promise<void> {
+  await api.delete(`/api/v1/admin/blocked-dates/${date}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
 }
 
 export async function reassignReservationDate(

@@ -68,7 +68,7 @@ export function FormStep() {
             />
             <Input
               label="Teléfono"
-              placeholder="+593 000 000 000"
+              placeholder="0999999999"
               type="tel"
               leftIcon={<Phone className="size-4" />}
               value={formData.phone}
@@ -78,7 +78,7 @@ export function FormStep() {
             <div className="sm:col-span-2">
               <Input
                 label="Edad"
-                placeholder="18"
+                placeholder="15"
                 type="number"
                 min={DEFAULT_RESERVATION_RULES.minAge}
                 leftIcon={<Calendar className="size-4" />}
