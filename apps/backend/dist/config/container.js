@@ -1,0 +1,20 @@
+import { ReservationRepository, TicketRepository, } from '../repositories/reservation.repository.js';
+import { BlockedDateRepository } from '../repositories/blocked-date.repository.js';
+import { CreateReservationUseCase, GetAvailabilityUseCase, GetTicketUseCase, } from '../use-cases/public.use-cases.js';
+import { BlockDateUseCase, DeleteReservationUseCase, GetDashboardUseCase, GetReservationUseCase, ListReservationsUseCase, LoginAdminUseCase, ReassignReservationDateUseCase, UnblockDateUseCase, UpdateReservationUseCase, } from '../use-cases/admin.use-cases.js';
+const reservationRepository = new ReservationRepository();
+const ticketRepository = new TicketRepository();
+const blockedDateRepository = new BlockedDateRepository();
+export const getAvailabilityUseCase = new GetAvailabilityUseCase(reservationRepository, blockedDateRepository);
+export const createReservationUseCase = new CreateReservationUseCase(reservationRepository, blockedDateRepository);
+export const getTicketUseCase = new GetTicketUseCase(reservationRepository, ticketRepository);
+export const loginAdminUseCase = new LoginAdminUseCase();
+export const getReservationUseCase = new GetReservationUseCase(reservationRepository);
+export const listReservationsUseCase = new ListReservationsUseCase(reservationRepository);
+export const updateReservationUseCase = new UpdateReservationUseCase(reservationRepository);
+export const deleteReservationUseCase = new DeleteReservationUseCase(reservationRepository);
+export const reassignReservationDateUseCase = new ReassignReservationDateUseCase(reservationRepository);
+export const getDashboardUseCase = new GetDashboardUseCase(reservationRepository, blockedDateRepository);
+export const blockDateUseCase = new BlockDateUseCase(blockedDateRepository);
+export const unblockDateUseCase = new UnblockDateUseCase(blockedDateRepository);
+//# sourceMappingURL=container.js.map
