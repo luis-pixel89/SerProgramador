@@ -190,9 +190,10 @@ dist/
 │   └── index.js                 ← publicRoutes, authRoutes, adminRoutes
 ├── use-cases/
 │   ├── public.use-cases.js      ← CreateReservation, GetAvailability, GetTicket
-│   └── admin.use-cases.js       ← Dashboard, List/Get/Update/Delete/Reassign
+│   └── admin.use-cases.js       ← Dashboard, List/Get/Update/Delete/Reassign, BlockDate, UnblockDate
 ├── repositories/
-│   └── reservation.repository.js  ← Prisma queries
+│   ├── reservation.repository.js  ← Prisma queries
+│   └── blocked-date.repository.js ← BlockedDate CRUD
 ├── schemas/
 │   └── reservation.schema.js    ← Zod validation
 ├── services/
@@ -232,6 +233,8 @@ dist/
 | `PUT` | `/api/v1/admin/reservations/:id` | Editar |
 | `DELETE` | `/api/v1/admin/reservations/:id` | Eliminar |
 | `PATCH` | `/api/v1/admin/reservations/:id/date` | Reasignar fecha |
+| `POST` | `/api/v1/admin/blocked-dates/:date` | Bloquear fecha |
+| `DELETE` | `/api/v1/admin/blocked-dates/:date` | Desbloquear fecha |
 
 ### Health
 
@@ -282,6 +285,7 @@ ReservationProvider (useReducer)
 |-------|-------|-----|
 | Dashboard stats | `['dashboard', token]` | AdminDashboard |
 | Reservations list | `['reservations', { page, filters }, token]` | AdminReservationsTable |
+| Availability | `['availability', 'all']` | AvailabilityCalendar, AdminDashboard |
 
 Configuración global: `staleTime: 5min`, `gcTime: 30min`, `retry: 1`.
 

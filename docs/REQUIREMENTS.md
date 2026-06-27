@@ -122,6 +122,7 @@ Excepciones:
 | RN-07 | Una reserva solo se puede reasignar a una fecha con cupos |
 | RN-08 | Las fechas pasadas no son seleccionables |
 | RN-09 | Los administradores se crean solo vía seed (no hay registro público) |
+| RN-10 | Las fechas bloqueadas por el admin se muestran como completamente llenas en el calendario público (truco de marketing) |
 
 ---
 
@@ -152,13 +153,6 @@ Ticket
 ├── reservationId (FK → Reservation)
 ├── qrCode
 ├── pdfUrl
-└── createdAt
-
-Admin
-├── id (PK)
-├── username (unique)
-├── passwordHash
-├── role
 └── createdAt
 
 BlockedDate
