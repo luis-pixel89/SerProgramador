@@ -1,3 +1,4 @@
+import { useLocation } from 'react-router-dom'
 import {
   CalendarDays,
   ChevronRight,
@@ -9,6 +10,7 @@ import {
   UtensilsCrossed,
 } from 'lucide-react'
 import {
+  Alert,
   Button,
   Card,
   CardContent,
@@ -37,6 +39,8 @@ const experienceCards = [
 ]
 
 export function LandingModal() {
+  const location = useLocation()
+  const error = (location.state as { error?: string } | null)?.error
   const { startWizard } = useReservation()
 
   return (
@@ -44,6 +48,11 @@ export function LandingModal() {
       <ModalOverlay />
       <Modal>
         <ModalContent className="max-w-3xl">
+          {error && (
+            <div className="px-6 pt-6">
+              <Alert variant="error" title={error} />
+            </div>
+          )}
           <ModalHeader>
             <div className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700 ring-1 ring-indigo-600/20">
               <Sparkles className="size-3.5" />

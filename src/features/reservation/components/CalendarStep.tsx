@@ -84,6 +84,7 @@ export function CalendarStep() {
         maxSlotsPerDay={maxSlotsPerDay}
         onSelectDate={setSelectedDate}
         calendarMonths={calendarMonths}
+        selectedDate={selectedDate}
       />
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">

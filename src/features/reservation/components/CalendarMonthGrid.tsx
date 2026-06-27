@@ -7,9 +7,10 @@ const weekDays = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
 interface CalendarMonthGridProps {
   month: CalendarMonthView
   onSelectDate?: (date: Date) => void
+  selectedDate?: Date | null
 }
 
-export function CalendarMonthGrid({ month, onSelectDate }: CalendarMonthGridProps) {
+export function CalendarMonthGrid({ month, onSelectDate, selectedDate }: CalendarMonthGridProps) {
   return (
     <Card glass>
       <CardContent className="space-y-4 p-4 sm:p-6">
@@ -29,6 +30,7 @@ export function CalendarMonthGrid({ month, onSelectDate }: CalendarMonthGridProp
               key={`${month.label}-${index}`}
               day={day}
               onSelect={onSelectDate}
+              isSelected={!!(selectedDate && day.date && selectedDate.getTime() === day.date.getTime())}
             />
           ))}
         </div>

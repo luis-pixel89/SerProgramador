@@ -8,6 +8,7 @@ export interface ReservationCalendarProps {
   maxSlotsPerDay: number
   onSelectDate: (date: Date) => void
   calendarMonths?: CalendarMonthView[]
+  selectedDate?: Date | null
 }
 
 export function ReservationCalendar({
@@ -16,6 +17,7 @@ export function ReservationCalendar({
   maxSlotsPerDay,
   onSelectDate,
   calendarMonths: prebuiltMonths,
+  selectedDate,
 }: ReservationCalendarProps) {
   const computedMonths = useReservationCalendar({
     reservations,
@@ -32,6 +34,7 @@ export function ReservationCalendar({
           key={`${month.year}-${month.month}`}
           month={month}
           onSelectDate={onSelectDate}
+          selectedDate={selectedDate}
         />
       ))}
     </div>

@@ -6,6 +6,7 @@ type VisualState = 'available' | 'last-spot' | 'full' | 'disabled' | 'empty'
 interface CalendarDayProps {
   day: CalendarDayModel
   onSelect?: (date: Date) => void
+  isSelected?: boolean
 }
 
 const stateStyles: Record<Exclude<VisualState, 'empty'>, string> = {
@@ -32,7 +33,7 @@ function mapStatusToVisual(status: DayAvailabilityStatus): VisualState {
   }
 }
 
-export function CalendarDay({ day, onSelect }: CalendarDayProps) {
+export function CalendarDay({ day, onSelect, isSelected }: CalendarDayProps) {
   const visualState = mapStatusToVisual(day.status)
 
   if (day.isEmpty || !day.day) {
@@ -60,6 +61,7 @@ export function CalendarDay({ day, onSelect }: CalendarDayProps) {
         stateStyles[visualState as Exclude<VisualState, 'empty'>],
         day.isSelectable && 'cursor-pointer',
         !day.isSelectable && 'cursor-not-allowed',
+        isSelected && 'ring-2 ring-red-500 ring-offset-1',
       )}
     >
       <span>{day.day}</span>

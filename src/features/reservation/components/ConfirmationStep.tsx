@@ -16,6 +16,8 @@ import { formatDisplayDate } from '../utils/displayDate'
 const QR_DATA = 'https://maps.app.goo.gl/y9kpVCUan5joQ8C49'
 const PDF_FILENAME = 'pase-krakedev.pdf'
 
+const DUPLICATE_EMAIL_MESSAGE = 'Ya existe una reserva para esta persona'
+
 export function ConfirmationStep() {
   const navigate = useNavigate()
   const { participant, selectedDate, resetReservation } = useReservation()
@@ -60,12 +62,17 @@ export function ConfirmationStep() {
     })
       .then(() => setApiStatus('done'))
       .catch((error: Error) => {
+        if (error.message === DUPLICATE_EMAIL_MESSAGE) {
+          resetReservation()
+          navigate(ROUTES.HOME, { state: { error: error.message } })
+          return
+        }
         setApiStatus('error')
         setErrorMessage(error.message)
       })
 
     return () => controller.abort()
-  }, [participant, selectedDate, apiStatus])
+  }, [participant, selectedDate, apiStatus, navigate, resetReservation])
 
   async function handleDownload() {
     const qrDataUrl = await QRCode.toDataURL(QR_DATA, {
