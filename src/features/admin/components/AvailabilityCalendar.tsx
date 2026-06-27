@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
-import { Alert, Card, CardContent } from '@/components'
+import { Alert, Button, Card, CardContent } from '@/components'
 import { cn } from '@/utils'
 import { fetchAvailability } from '@/services'
 import type { AvailabilityDay } from '@/services'
@@ -38,6 +38,8 @@ interface AvailabilityCalendarProps {
   selectedDate?: string | null
   currentDate?: string | null
   onSelect?: (date: string) => void
+  onCancel?: () => void
+  isPending?: boolean
 }
 
 function MonthGrid({
@@ -120,6 +122,8 @@ export default function AvailabilityCalendar({
   selectedDate,
   currentDate,
   onSelect,
+  onCancel,
+  isPending,
 }: AvailabilityCalendarProps) {
   const { data, isLoading, isError } = useQuery({
     queryKey: ['availability', 'all'],
@@ -176,13 +180,18 @@ export default function AvailabilityCalendar({
           ))}
         </div>
 
-        <div className="flex flex-wrap gap-4 border-t border-slate-100 pt-4">
-          {LEGEND.map((item) => (
-            <div key={item.label} className="flex items-center gap-2">
-              <div className={cn('size-3.5 rounded border', item.bg)} />
-              <span className="text-[11px] text-slate-500">{item.label}</span>
-            </div>
-          ))}
+        <div className="flex flex-wrap items-center justify-between gap-4 border-t border-slate-100 pt-4">
+          <div className="flex flex-wrap gap-4">
+            {LEGEND.map((item) => (
+              <div key={item.label} className="flex items-center gap-2">
+                <div className={cn('size-3.5 rounded border', item.bg)} />
+                <span className="text-[11px] text-slate-500">{item.label}</span>
+              </div>
+            ))}
+          </div>
+          <Button variant="outline" onClick={onCancel} disabled={isPending}>
+            Cancelar
+          </Button>
         </div>
       </CardContent>
     </Card>

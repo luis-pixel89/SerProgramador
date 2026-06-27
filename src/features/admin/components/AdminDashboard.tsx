@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   Calendar,
   CalendarDays,
@@ -19,9 +19,11 @@ import {
 import { QUERY_KEYS } from '@/constants'
 import { useAuth } from '@/features/admin/context'
 import { ReassignModal } from '@/features/admin/components'
+import * as XLSX from 'xlsx'
 import {
   fetchDashboard,
   fetchReservations,
+  updateReservation,
 } from '@/services'
 
 function formatDate(iso: string): string {
@@ -141,6 +143,31 @@ export function AdminReservationsTable() {
     queryClient.invalidateQueries({ queryKey: QUERY_KEYS.reservations.all })
   }
 
+  const cancelMutation = useMutation({
+    mutationFn: (id: string) => updateReservation(token!, id, { status: 'cancelled' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.reservations.all })
+    },
+  })
+
+  function handleExportExcel() {
+    const allReservations = data?.data ?? []
+    const confirmed = allReservations.filter((r) => r.status === 'confirmed')
+    const rows = confirmed.map((r) => ({
+      'No. Reserva': r.reservationNumber,
+      'Nombre': r.participant.fullName,
+      'Correo': r.participant.email,
+      'Edad': r.participant.age,
+      'Teléfono': r.participant.phone,
+      'Fecha': formatDate(r.reservationDate),
+      'Estado': getStatusBadge(r.status).label,
+    }))
+    const ws = XLSX.utils.json_to_sheet(rows)
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, 'Reservas')
+    XLSX.writeFile(wb, `reservas-confirmadas-${new Date().toISOString().slice(0, 10)}.xlsx`)
+  }
+
   if (isLoading) {
     return (
       <Card glass className="overflow-hidden">
@@ -183,16 +210,20 @@ export function AdminReservationsTable() {
     )
   }
 
-  const reservations = data?.data ?? []
+  const allReservations = data?.data ?? []
+  const reservations = allReservations.filter((r) => r.status === 'confirmed')
   const totalPages = data?.totalPages ?? 1
 
   return (
     <Card glass className="overflow-hidden">
-      <div className="border-b border-slate-100 px-6 py-5">
+      <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5">
         <SectionTitle
           title="Reservas registradas"
           description={`${data?.total ?? 0} reserva(s) en total.`}
         />
+        <Button size="sm" variant="outline" onClick={handleExportExcel} disabled={reservations.length === 0}>
+          Exportar Excel
+        </Button>
       </div>
 
       <div className="overflow-x-auto">
@@ -258,7 +289,14 @@ export function AdminReservationsTable() {
                       >
                         Reagendar
                       </Button>
-                      <Button size="sm" variant="danger">Cancelar</Button>
+                      <Button
+                        size="sm"
+                        variant="danger"
+                        onClick={() => cancelMutation.mutate(reservation.id)}
+                        disabled={cancelMutation.isPending}
+                      >
+                        {cancelMutation.isPending ? 'Cancelando...' : 'Cancelar'}
+                      </Button>
                     </div>
                   </td>
                 </tr>

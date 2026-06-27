@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { Calendar } from 'lucide-react'
-import { Alert, Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from '@/components'
+import { Alert, Modal, ModalBody, ModalContent, ModalHeader, ModalOverlay } from '@/components'
 import type { ReservationListItem } from '@/services'
 import { reassignReservationDate } from '@/services'
 import AvailabilityCalendar from './AvailabilityCalendar'
@@ -25,9 +25,10 @@ export default function ReassignModal({ reservation, token, open, onClose, onRea
     },
   })
 
-  function handleConfirm() {
-    if (!selectedDate) return
-    mutation.mutate(selectedDate)
+  function handleDateSelect(date: string) {
+    if (mutation.isPending) return
+    setSelectedDate(date)
+    mutation.mutate(date)
   }
 
   return (
@@ -53,7 +54,9 @@ export default function ReassignModal({ reservation, token, open, onClose, onRea
             <AvailabilityCalendar
               currentDate={reservation.reservationDate}
               selectedDate={selectedDate}
-              onSelect={setSelectedDate}
+              onSelect={handleDateSelect}
+              onCancel={onClose}
+              isPending={mutation.isPending}
             />
 
             {mutation.isError && (
@@ -62,18 +65,6 @@ export default function ReassignModal({ reservation, token, open, onClose, onRea
               </Alert>
             )}
           </ModalBody>
-
-          <ModalFooter>
-            <Button variant="outline" onClick={onClose} disabled={mutation.isPending}>
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleConfirm}
-              disabled={!selectedDate || mutation.isPending}
-            >
-              {mutation.isPending ? 'Reagendando...' : 'Confirmar cambio de fecha'}
-            </Button>
-          </ModalFooter>
         </ModalContent>
       </Modal>
     </>
