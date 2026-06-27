@@ -20,7 +20,9 @@ export function ConfirmationStep() {
   const navigate = useNavigate()
   const { participant, selectedDate, resetReservation } = useReservation()
   const qrCanvasRef = useRef<HTMLCanvasElement>(null)
+  const hasCalledApi = useRef(false)
   const [apiStatus, setApiStatus] = useState<'idle' | 'saving' | 'done' | 'error'>('idle')
+  const [errorMessage, setErrorMessage] = useState('')
 
   const participantName = participant?.fullName || '—'
   const participantEmail = participant?.email || '—'
@@ -38,21 +40,31 @@ export function ConfirmationStep() {
   }, [])
 
   useEffect(() => {
-    if (!participant || !selectedDate || apiStatus !== 'idle') return
+    if (!participant || !selectedDate || apiStatus !== 'idle' || hasCalledApi.current) return
 
+    hasCalledApi.current = true
     setApiStatus('saving')
+    setErrorMessage('')
 
     const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`
+    const sanitizedPhone = participant.phone.replace(/\D/g, '')
+
+    const controller = new AbortController()
 
     createReservation({
       fullName: participant.fullName,
       email: participant.email,
-      phone: participant.phone,
+      phone: sanitizedPhone,
       age: participant.age,
       reservationDate: dateStr,
     })
       .then(() => setApiStatus('done'))
-      .catch(() => setApiStatus('error'))
+      .catch((error: Error) => {
+        setApiStatus('error')
+        setErrorMessage(error.message)
+      })
+
+    return () => controller.abort()
   }, [participant, selectedDate, apiStatus])
 
   async function handleDownload() {
@@ -129,8 +141,10 @@ export function ConfirmationStep() {
 
     pdf.save(PDF_FILENAME)
 
-    resetReservation()
-    navigate(ROUTES.HOME)
+    setTimeout(() => {
+      resetReservation()
+      navigate(ROUTES.HOME)
+    }, 300)
   }
 
   return (
@@ -148,10 +162,10 @@ export function ConfirmationStep() {
         {apiStatus === 'error' && (
           <Alert
             variant="error"
-            title="Error de conexión"
+            title="No se pudo guardar la reserva"
             className="mt-4 max-w-md text-left"
           >
-            No se pudo guardar tu reserva en el servidor. Puedes descargar tu pase igualmente.
+            {errorMessage || 'Error inesperado en el servidor.'} Puedes descargar tu pase igualmente.
           </Alert>
         )}
         {apiStatus === 'done' && (

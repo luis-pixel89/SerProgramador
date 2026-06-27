@@ -14,5 +14,3 @@ export function AppProviders({ children }: AppProvidersProps) {
     </QueryClientProvider>
   )
 }
-
-export { queryClient } from './queryClient'

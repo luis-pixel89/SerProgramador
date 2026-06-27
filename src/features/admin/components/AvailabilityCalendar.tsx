@@ -22,7 +22,7 @@ const LEGEND = [
   { bg: 'bg-slate-50 border-slate-100', label: 'No disponible' },
 ]
 
-const WEEKDAYS = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá']
+const WEEKDAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
 const MONTHS = [7, 8]
 const YEAR = 2026
 
@@ -58,7 +58,7 @@ function MonthGrid({
   const year = dateObj.getFullYear()
 
   const firstDay = new Date(year, month - 1, 1)
-  const offset = firstDay.getDay()
+  const offset = (firstDay.getDay() + 6) % 7
   const emptyCells = Array.from({ length: offset })
 
   return (

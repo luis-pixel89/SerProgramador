@@ -58,6 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
+// oxlint-disable-next-line react/only-export-components
 export function useAuth(): AuthContextValue {
   const context = useContext(AuthContext)
   if (!context) {

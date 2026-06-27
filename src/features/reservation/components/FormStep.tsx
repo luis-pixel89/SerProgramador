@@ -24,6 +24,12 @@ export function FormStep() {
     })
   }
 
+  const digitsOnly = formData.phone.replace(/\D/g, '')
+  const phoneError =
+    formData.phone.length > 0 && digitsOnly.length !== 10
+      ? 'El teléfono debe tener exactamente 10 dígitos.'
+      : undefined
+
   const ageError =
     formData.age > 0 && formData.age < DEFAULT_RESERVATION_RULES.minAge
       ? 'Debes tener al menos 15 años para participar.'
@@ -67,6 +73,7 @@ export function FormStep() {
               leftIcon={<Phone className="size-4" />}
               value={formData.phone}
               onChange={(event) => updateField('phone', event.target.value)}
+              error={phoneError}
             />
             <div className="sm:col-span-2">
               <Input
