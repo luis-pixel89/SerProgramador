@@ -152,7 +152,7 @@ export async function blockDate(
   token: string,
   date: string,
 ): Promise<void> {
-  await api.post(`/api/v1/admin/blocked-dates/${date}`, null, {
+  await api.post(`/api/v1/admin/blocked-dates/${date}`, undefined, {
     headers: { Authorization: `Bearer ${token}` },
   })
 }
