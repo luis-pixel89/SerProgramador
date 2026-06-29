@@ -2,20 +2,19 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CalendarDays, CheckCircle2, Clock, Download, MapPin, User } from 'lucide-react'
 import QRCode from 'qrcode'
-import jsPDF from 'jspdf'
 import { Alert, Badge, Button, Card, CardContent, SectionTitle } from '@/components'
 import { ROUTES } from '@/constants'
 import { ApiError, createReservation } from '@/services'
+import { useReservation } from '../hooks'
+import { toDateKey } from '../utils/dateUtils'
+import { formatDisplayDate } from '../utils/displayDate'
 import {
   CAMPAIGN_ADDRESS,
   CAMPAIGN_SCHEDULE,
 } from '../domain/campaignDisplay'
-import { useReservation } from '../hooks'
-import { toDateKey } from '../utils/dateUtils'
-import { formatDisplayDate } from '../utils/displayDate'
+import { generatePasePdf } from '../utils/generatePasePdf'
 
 const QR_DATA = 'https://maps.app.goo.gl/y9kpVCUan5joQ8C49'
-const PDF_FILENAME = 'pase-krakedev.pdf'
 
 export function ConfirmationStep() {
   const navigate = useNavigate()
@@ -36,7 +35,7 @@ export function ConfirmationStep() {
     QRCode.toCanvas(qrCanvasRef.current, QR_DATA, {
       width: 80,
       margin: 1,
-      color: { dark: '#0f172a', light: '#ffffff' },
+      color: { dark: '#ffffff', light: '#1e1e1e' },
     })
   }, [])
 
@@ -57,89 +56,24 @@ export function ConfirmationStep() {
     })
       .then(() => setApiStatus('done'))
       .catch((error: Error) => {
-        if (error instanceof ApiError && error.status === 409) {
-          resetReservation()
-          navigate(ROUTES.HOME, { state: { error: error.message } })
-          return
-        }
+          if (error instanceof ApiError && error.status === 409) {
+            resetReservation()
+            navigate(ROUTES.HOME, { state: { duplicateError: true } })
+            return
+          }
         setApiStatus('error')
         setErrorMessage(error.message)
       })
   }, [participant, selectedDate, resetReservation, navigate])
 
   async function handleDownload() {
-    const qrDataUrl = await QRCode.toDataURL(QR_DATA, {
-      width: 200,
-      margin: 2,
-      color: { dark: '#0f172a', light: '#ffffff' },
+    await generatePasePdf({
+      fullName: participantName,
+      email: participantEmail,
+      phone: participantPhone,
+      age: participantAge,
+      date: formattedDate,
     })
-
-    const pdf = new jsPDF({ unit: 'mm', format: 'a5' })
-    const pageW = pdf.internal.pageSize.getWidth()
-    const margin = 15
-    let y = margin
-
-    pdf.setFillColor(15, 23, 42)
-    pdf.rect(0, 0, pageW, 28, 'F')
-    pdf.setTextColor(255, 255, 255)
-    pdf.setFontSize(18)
-    pdf.setFont('helvetica', 'bold')
-    pdf.text('Krakedev', pageW / 2, 16, { align: 'center' })
-    pdf.setFontSize(9)
-    pdf.setFont('helvetica', 'normal')
-    pdf.text('Pase de entrada — Se Programador por un Dia', pageW / 2, 22, { align: 'center' })
-
-    y = 38
-    pdf.setTextColor(15, 23, 42)
-    pdf.setFontSize(11)
-    pdf.setFont('helvetica', 'bold')
-    pdf.text('Datos del Participante', margin, y)
-    y += 8
-    pdf.setFont('helvetica', 'normal')
-    pdf.setFontSize(9)
-
-    const fields = [
-      ['Nombre', participantName],
-      ['Email', participantEmail],
-      ['Telefono', participantPhone],
-      ['Edad', String(participantAge)],
-      ['Fecha', formattedDate],
-      ['Horario', CAMPAIGN_SCHEDULE],
-      ['Direccion', CAMPAIGN_ADDRESS],
-    ]
-
-    for (const [label, value] of fields) {
-      pdf.setTextColor(100, 116, 139)
-      pdf.text(label, margin, y)
-      pdf.setTextColor(15, 23, 42)
-      pdf.text(value, margin + 40, y)
-      y += 6
-    }
-
-    y += 6
-    const qrSize = 50
-    const qrX = pageW / 2 - qrSize / 2
-    pdf.addImage(qrDataUrl, 'PNG', qrX, y, qrSize, qrSize)
-    y += qrSize + 4
-    pdf.setFontSize(7)
-    pdf.setTextColor(148, 163, 184)
-    pdf.text('Escanea para ver la ubicacion', pageW / 2, y, { align: 'center' })
-
-    y += 10
-    if (y > pdf.internal.pageSize.getHeight() - margin) {
-      pdf.addPage()
-      y = margin
-    }
-
-    pdf.setDrawColor(226, 232, 240)
-    pdf.setLineWidth(0.5)
-    pdf.line(margin, y, pageW - margin, y)
-    y += 4
-    pdf.setFontSize(7)
-    pdf.setTextColor(148, 163, 184)
-    pdf.text('Krakedev — Escuela de Programacion', pageW / 2, y, { align: 'center' })
-
-    pdf.save(PDF_FILENAME)
 
     setTimeout(() => {
       resetReservation()
@@ -150,8 +84,8 @@ export function ConfirmationStep() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col items-center text-center">
-        <div className="flex size-16 items-center justify-center rounded-full bg-emerald-50 ring-1 ring-emerald-600/20">
-          <CheckCircle2 className="size-8 text-emerald-600" />
+        <div className="flex size-16 items-center justify-center rounded-full bg-emerald-950/40 ring-1 ring-emerald-500/30">
+          <CheckCircle2 className="size-8 text-emerald-400" />
         </div>
         <SectionTitle
           align="center"
@@ -169,7 +103,7 @@ export function ConfirmationStep() {
           </Alert>
         )}
         {apiStatus === 'done' && (
-          <p className="mt-2 text-sm text-emerald-600 font-medium">
+          <p className="mt-2 text-sm text-emerald-400 font-medium">
             Reserva guardada en el sistema
           </p>
         )}
@@ -187,13 +121,13 @@ export function ConfirmationStep() {
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         <Card className="overflow-hidden">
           <CardContent className="p-0">
-            <div className="border-b border-slate-100 bg-slate-50/80 px-6 py-4">
+            <div className="border-b border-[#2d2d2d] bg-[#111111]/80 px-6 py-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                  <p className="text-xs font-medium uppercase tracking-wide text-[#9ca3af]">
                     Vista previa del pase
                   </p>
-                  <p className="font-semibold text-slate-900">Krakedev — Pase de entrada</p>
+                  <p className="font-semibold text-white">Krakedev — Pase de entrada</p>
                 </div>
                 <Badge variant="success">Válido</Badge>
               </div>
@@ -201,30 +135,30 @@ export function ConfirmationStep() {
 
             <div className="space-y-6 p-6 sm:p-8">
               <div className="flex items-center gap-3">
-                <div className="flex size-12 items-center justify-center rounded-2xl bg-slate-900 text-sm font-bold text-white">
+                <div className="flex size-12 items-center justify-center rounded-2xl bg-[#ef0a10] text-sm font-bold text-white">
                   KD
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-900">Krakedev</p>
-                  <p className="text-sm text-slate-500">Sé Programador por un Día</p>
+                  <p className="font-semibold text-white">Krakedev</p>
+                  <p className="text-sm text-[#9ca3af]">Sé Programador por un Día</p>
                 </div>
               </div>
 
-              <div className="space-y-3 rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 p-4">
+              <div className="space-y-3 rounded-2xl border border-dashed border-[#2d2d2d] bg-[#111111]/50 p-4">
                 <PreviewRow label="Participante" value={participantName} />
                 <PreviewRow label="Fecha" value={formattedDate} />
                 <PreviewRow label="Horario" value={CAMPAIGN_SCHEDULE} />
                 <PreviewRow label="Dirección" value={CAMPAIGN_ADDRESS} />
               </div>
 
-              <div className="flex items-center justify-between rounded-2xl border border-slate-200 p-4">
+              <div className="flex items-center justify-between rounded-2xl border border-[#2d2d2d] p-4">
                 <div>
-                  <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                  <p className="text-xs font-medium uppercase tracking-wide text-[#9ca3af]">
                     Código QR
                   </p>
-                  <p className="text-sm text-slate-600">Escanea para ver la ubicación</p>
+                  <p className="text-sm text-[#6b7280]">Escanea para ver la ubicación</p>
                 </div>
-                <div className="flex size-22 items-center justify-center rounded-xl border border-slate-200 bg-white p-1">
+                <div className="flex size-22 items-center justify-center rounded-xl border border-[#2d2d2d] bg-[#1e1e1e] p-1">
                   <canvas ref={qrCanvasRef} className="size-20" />
                 </div>
               </div>
@@ -234,18 +168,18 @@ export function ConfirmationStep() {
 
         <Card glass className="h-fit">
           <CardContent className="space-y-4 p-6">
-            <h3 className="font-semibold text-slate-900">Instrucciones</h3>
-            <ul className="space-y-3 text-sm text-slate-600">
+            <h3 className="font-semibold text-white">Instrucciones</h3>
+            <ul className="space-y-3 text-sm text-[#9ca3af]">
               <li className="flex gap-2">
-                <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-indigo-500" />
+                <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[#ef0a10]" />
                 Llega 15 minutos antes del horario indicado.
               </li>
               <li className="flex gap-2">
-                <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-indigo-500" />
+                <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[#ef0a10]" />
                 Presenta tu pase impreso o en digital.
               </li>
               <li className="flex gap-2">
-                <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-indigo-500" />
+                <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-[#ef0a10]" />
                 Recuerda cumplir con la edad mínima requerida.
               </li>
             </ul>
@@ -269,23 +203,23 @@ function DetailItem({
   value: string
 }) {
   return (
-    <div className="flex items-start gap-3">
-      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
-        <Icon className="size-4" />
+      <div className="flex items-start gap-3">
+        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#1e1e1e] text-[#9ca3af]">
+          <Icon className="size-4" />
+        </div>
+        <div>
+          <p className="text-xs font-medium uppercase tracking-wide text-[#9ca3af]">{label}</p>
+          <p className="mt-1 font-medium text-white">{value}</p>
+        </div>
       </div>
-      <div>
-        <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</p>
-        <p className="mt-1 font-medium text-slate-900">{value}</p>
-      </div>
-    </div>
   )
 }
 
 function PreviewRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-4 text-sm">
-      <span className="text-slate-500">{label}</span>
-      <span className="font-medium text-slate-900">{value}</span>
+      <span className="text-[#9ca3af]">{label}</span>
+      <span className="font-medium text-white">{value}</span>
     </div>
   )
 }

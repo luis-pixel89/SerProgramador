@@ -19,7 +19,7 @@ export function AdminLayout() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col bg-slate-50/50">
+    <div className="flex min-h-dvh flex-col bg-[#0a0a0a]">
       <Navbar variant="admin" />
       <main className="flex-1">
         <Outlet />

@@ -8,9 +8,9 @@ export function KrakeLogo({ className }: { className?: string }) {
       aria-hidden="true"
     >
       <circle cx="100" cy="85" r="38" fill="white" />
-      <ellipse cx="100" cy="95" rx="22" ry="14" fill="#0a0a0f" />
-      <circle cx="86" cy="76" r="5" fill="#dc2626" />
-      <circle cx="114" cy="76" r="5" fill="#dc2626" />
+      <ellipse cx="100" cy="95" rx="22" ry="14" fill="#0a0a0a" />
+      <circle cx="86" cy="76" r="5" fill="#ef0a10" />
+      <circle cx="114" cy="76" r="5" fill="#ef0a10" />
       <circle cx="86" cy="76" r="2" fill="white" />
       <circle cx="114" cy="76" r="2" fill="white" />
 
@@ -61,7 +61,7 @@ export function KrakeLogo({ className }: { className?: string }) {
 
       <path
         d="M100 40 C108 30, 108 20, 100 16 C92 20, 92 30, 100 40Z"
-        fill="#dc2626"
+        fill="#ef0a10"
         opacity="0.3"
       />
     </svg>

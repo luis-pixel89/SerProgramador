@@ -24,6 +24,20 @@ export function FormStep() {
     })
   }
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+  const nameOnlyRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/
+
+  const nameError =
+    formData.fullName.length > 0 && !nameOnlyRegex.test(formData.fullName.trim())
+      ? 'El nombre solo debe contener letras.'
+      : undefined
+
+  const emailError =
+    formData.email.length > 0 && !emailRegex.test(formData.email.trim())
+      ? 'Ingresa un correo electrónico válido.'
+      : undefined
+
   const digitsOnly = formData.phone.replace(/\D/g, '')
   const phoneError =
     formData.phone.length > 0 && digitsOnly.length !== 10
@@ -57,7 +71,10 @@ export function FormStep() {
                 placeholder="Tu nombre completo"
                 leftIcon={<User className="size-4" />}
                 value={formData.fullName}
-                onChange={(event) => updateField('fullName', event.target.value)}
+                onChange={(event) =>
+                  updateField('fullName', event.target.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, ''))
+                }
+                error={nameError}
               />
             </div>
             <Input
@@ -67,6 +84,7 @@ export function FormStep() {
               leftIcon={<Mail className="size-4" />}
               value={formData.email}
               onChange={(event) => updateField('email', event.target.value)}
+              error={emailError}
             />
             <Input
               label="Teléfono"
@@ -74,7 +92,9 @@ export function FormStep() {
               type="tel"
               leftIcon={<Phone className="size-4" />}
               value={formData.phone}
-              onChange={(event) => updateField('phone', event.target.value)}
+              onChange={(event) =>
+                updateField('phone', event.target.value.replace(/\D/g, '').slice(0, 10))
+              }
               error={phoneError}
             />
             <div className="sm:col-span-2">
@@ -91,9 +111,9 @@ export function FormStep() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50/80 p-4">
-            <p className="text-sm font-medium text-emerald-900">Fecha seleccionada</p>
-            <p className="mt-1 text-sm text-emerald-700">
+          <div className="rounded-2xl border border-emerald-700 bg-emerald-950/40 p-4">
+            <p className="text-sm font-medium text-emerald-400">Fecha seleccionada</p>
+            <p className="mt-1 text-sm text-emerald-300">
               {selectedDate ? formatDisplayDate(selectedDate) : 'Selecciona una fecha en el calendario'}
             </p>
           </div>

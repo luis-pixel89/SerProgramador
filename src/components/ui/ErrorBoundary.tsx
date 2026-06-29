@@ -38,14 +38,14 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
       return (
         <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4 px-4">
-          <div className="flex size-14 items-center justify-center rounded-full bg-red-100">
-            <AlertCircle className="size-7 text-red-600" />
+          <div className="flex size-14 items-center justify-center rounded-full bg-red-950/40">
+            <AlertCircle className="size-7 text-red-400" />
           </div>
           <div className="space-y-1 text-center">
-            <h2 className="text-lg font-semibold text-slate-900">
+            <h2 className="text-lg font-semibold text-white">
               Algo salió mal
             </h2>
-            <p className="max-w-sm text-sm text-slate-500">
+            <p className="max-w-sm text-sm text-[#9ca3af]">
               Ocurrió un error inesperado. Intenta recargar la página.
             </p>
           </div>

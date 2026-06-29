@@ -17,7 +17,7 @@ export function Loader({ size = 'md', className, label = 'Cargando...' }: Loader
     <div className={cn('flex flex-col items-center gap-3', className)} role="status">
       <div
         className={cn(
-          'animate-spin rounded-full border-slate-200 border-t-indigo-500',
+          'animate-spin rounded-full border-[#2d2d2d] border-t-[#ef0a10]',
           sizeStyles[size],
         )}
       />

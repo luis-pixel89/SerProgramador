@@ -26,11 +26,11 @@ export function SectionTitle({
       {...props}
     >
       <div className={cn('space-y-2', align === 'center' && 'max-w-2xl')}>
-        <h2 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+        <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
           {title}
         </h2>
         {description && (
-          <p className="text-sm text-slate-500 sm:text-base">{description}</p>
+          <p className="text-sm text-[#9ca3af] sm:text-base">{description}</p>
         )}
       </div>
       {action}

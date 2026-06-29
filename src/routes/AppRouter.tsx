@@ -12,7 +12,7 @@ const AdminLoginPage = lazy(() => import('@/features/admin/pages/AdminLoginPage'
 function RouteFallback() {
   return (
     <div className="flex min-h-[50vh] items-center justify-center">
-      <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-200 border-t-indigo-500" />
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#2d2d2d] border-t-[#ef0a10]" />
     </div>
   )
 }

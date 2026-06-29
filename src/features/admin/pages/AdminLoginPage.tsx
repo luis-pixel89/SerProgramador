@@ -29,18 +29,18 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-slate-50/50 px-4">
+    <div className="flex min-h-dvh items-center justify-center bg-[#0a0a0a] px-4">
       <Card className="w-full max-w-sm">
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-6 p-6 sm:p-8">
             <div className="space-y-1.5 text-center">
-              <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-sm">
+              <div className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-[#ef0a10] text-white shadow-sm">
                 <Lock className="size-5" />
               </div>
-              <h1 className="text-xl font-semibold tracking-tight text-slate-900">
+              <h1 className="text-xl font-semibold tracking-tight text-white">
                 Acceso Administrador
               </h1>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-[#9ca3af]">
                 Ingresa tus credenciales para acceder al panel.
               </p>
             </div>
@@ -65,7 +65,7 @@ export default function AdminLoginPage() {
             </div>
 
             {error && (
-              <p className="text-center text-sm font-medium text-red-600">
+              <p className="text-center text-sm font-medium text-red-400">
                 Usuario o contraseña incorrectos.
               </p>
             )}

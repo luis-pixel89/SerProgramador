@@ -6,22 +6,22 @@ import { fetchAvailability } from '@/services'
 import type { AvailabilityDay } from '@/services'
 
 const STATUS_STYLES: Record<string, { bg: string; text: string; border: string; label: string }> = {
-  available: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', label: 'Disponible' },
-  'last-spot': { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200', label: 'Último cupo' },
-  full: { bg: 'bg-red-50', text: 'text-red-400', border: 'border-red-100', label: 'Lleno' },
-  weekend: { bg: 'bg-slate-50', text: 'text-slate-300', border: 'border-slate-100', label: '' },
-  past: { bg: 'bg-slate-50', text: 'text-slate-300', border: 'border-slate-100', label: '' },
-  disabled: { bg: 'bg-slate-50', text: 'text-slate-300', border: 'border-slate-100', label: '' },
+  available: { bg: 'bg-emerald-950/40', text: 'text-emerald-300', border: 'border-emerald-700', label: 'Disponible' },
+  'last-spot': { bg: 'bg-amber-950/40', text: 'text-amber-300', border: 'border-amber-700', label: 'Último cupo' },
+  full: { bg: 'bg-red-950/30', text: 'text-red-500', border: 'border-red-800', label: 'Lleno' },
+  weekend: { bg: 'bg-[#111111]', text: 'text-[#4a4a4a]', border: 'border-[#2d2d2d]', label: '' },
+  past: { bg: 'bg-[#111111]', text: 'text-[#4a4a4a]', border: 'border-[#2d2d2d]', label: '' },
+  disabled: { bg: 'bg-[#111111]', text: 'text-[#4a4a4a]', border: 'border-[#2d2d2d]', label: '' },
   empty: { bg: 'bg-transparent', text: 'text-transparent', border: 'border-transparent', label: '' },
-  blocked: { bg: 'bg-violet-100', text: 'text-violet-700', border: 'border-violet-300', label: 'Bloqueado' },
+  blocked: { bg: 'bg-violet-950/40', text: 'text-violet-300', border: 'border-violet-700', label: 'Bloqueado' },
 }
 
 const LEGEND = [
-  { bg: 'bg-emerald-50 border-emerald-200', label: 'Disponible' },
-  { bg: 'bg-amber-50 border-amber-200', label: 'Último cupo' },
-  { bg: 'bg-red-50 border-red-100', label: 'Completo' },
-  { bg: 'bg-violet-100 border-violet-300', label: 'Bloqueado' },
-  { bg: 'bg-slate-50 border-slate-100', label: 'No disponible' },
+  { bg: 'bg-emerald-950/40 border-emerald-700', label: 'Disponible' },
+  { bg: 'bg-amber-950/40 border-amber-700', label: 'Último cupo' },
+  { bg: 'bg-red-950/30 border-red-800', label: 'Completo' },
+  { bg: 'bg-violet-950/40 border-violet-700', label: 'Bloqueado' },
+  { bg: 'bg-[#111111] border-[#2d2d2d]', label: 'No disponible' },
 ]
 
 const WEEKDAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
@@ -70,12 +70,12 @@ function MonthGrid({
 
   return (
     <div className="space-y-2">
-      <h4 className="text-center text-sm font-semibold text-slate-700">
+      <h4 className="text-center text-sm font-semibold text-white">
         {monthName(month)} {year}
       </h4>
       <div className="grid grid-cols-7 gap-1">
         {WEEKDAYS.map((d) => (
-          <div key={d} className="py-1 text-center text-[10px] font-semibold uppercase text-slate-400">
+          <div key={d} className="py-1 text-center text-[10px] font-semibold uppercase text-[#6b7280]">
             {d}
           </div>
         ))}
@@ -104,8 +104,8 @@ function MonthGrid({
               }}
               className={cn(
                 'relative flex flex-col items-center rounded-md border px-0.5 py-1.5 text-[11px] transition-all',
-                isSelected && 'ring-2 ring-violet-500 ring-offset-1',
-                isCurrent && 'ring-2 ring-slate-400 ring-offset-1',
+                isSelected && 'ring-2 ring-violet-400 ring-offset-2 ring-offset-[#1e1e1e]',
+                isCurrent && 'ring-2 ring-[#4a4a4a] ring-offset-2 ring-offset-[#1e1e1e]',
                 canClick && !isSelected && 'cursor-pointer hover:shadow-sm',
                 canToggleBlock && 'cursor-pointer hover:shadow-sm',
                 style.bg,
@@ -118,15 +118,15 @@ function MonthGrid({
                 {formatDay(day.date)}
               </span>
               {isCurrent && (
-                <span className="mt-0.5 leading-none text-[8px] font-medium text-slate-400">Actual</span>
+                <span className="mt-0.5 leading-none text-[8px] font-medium text-[#6b7280]">Actual</span>
               )}
               {day.status === 'last-spot' && !isCurrent && !day.isBlocked && (
-                <span className="mt-0.5 leading-none text-[8px] font-medium text-amber-600">1 cupo</span>
+                <span className="mt-0.5 leading-none text-[8px] font-medium text-amber-400">1 cupo</span>
               )}
               {canToggleBlock && (
                 day.isBlocked
-                  ? <Lock className="mt-0.5 size-3 text-violet-600" />
-                  : <Unlock className="mt-0.5 size-3 text-slate-400" />
+                  ? <Lock className="mt-0.5 size-3 text-violet-400" />
+                  : <Unlock className="mt-0.5 size-3 text-[#6b7280]" />
               )}
             </button>
           )
@@ -154,7 +154,7 @@ export default function AvailabilityCalendar({
     return (
       <Card glass>
         <CardContent className="flex items-center justify-center py-12">
-          <Loader2 className="size-6 animate-spin text-slate-400" />
+          <Loader2 className="size-6 animate-spin text-[#6b7280]" />
         </CardContent>
       </Card>
     )
@@ -201,12 +201,12 @@ export default function AvailabilityCalendar({
           ))}
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-4 border-t border-slate-100 pt-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#2d2d2d] pt-4">
           <div className="flex flex-wrap gap-4">
             {LEGEND.map((item) => (
               <div key={item.label} className="flex items-center gap-2">
                 <div className={cn('size-3.5 rounded border', item.bg)} />
-                <span className="text-[11px] text-slate-500">{item.label}</span>
+                <span className="text-[11px] text-[#9ca3af]">{item.label}</span>
               </div>
             ))}
           </div>

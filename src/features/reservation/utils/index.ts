@@ -26,3 +26,5 @@ export { calculateAvailability } from './calculateAvailability'
 export { generateCalendar, buildCalendarFromApi } from './generateCalendar'
 
 export { formatDisplayDate, formatShortDate } from './displayDate'
+
+export { generatePasePdf } from './generatePasePdf'

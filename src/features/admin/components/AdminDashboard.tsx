@@ -1,10 +1,12 @@
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   Calendar,
   CalendarDays,
   CalendarRange,
   CheckCircle2,
+  Download,
   TrendingUp,
   Users,
 } from 'lucide-react'
@@ -19,6 +21,7 @@ import {
 import { QUERY_KEYS } from '@/constants'
 import { useAuth } from '@/features/admin/context'
 import { ReassignModal } from '@/features/admin/components'
+import { generatePasePdf } from '@/features/reservation/utils/generatePasePdf'
 import * as XLSX from 'xlsx'
 import {
   fetchDashboard,
@@ -62,11 +65,11 @@ export function AdminStatsGrid() {
   })
 
   const statCards = [
-    { label: 'Total Reservas', icon: Users, value: dashboard?.totalReservations, accent: 'bg-indigo-50 text-indigo-600' },
-    { label: 'Julio', icon: CalendarDays, value: dashboard?.reservationsByMonth?.['2026-07'], accent: 'bg-sky-50 text-sky-600' },
-    { label: 'Agosto', icon: CalendarRange, value: dashboard?.reservationsByMonth?.['2026-08'], accent: 'bg-violet-50 text-violet-600' },
-    { label: 'Fechas Completas', icon: CheckCircle2, value: dashboard?.fullDates, accent: 'bg-red-50 text-red-600' },
-    { label: 'Cupos Disponibles', icon: TrendingUp, value: dashboard?.availableSlots, accent: 'bg-emerald-50 text-emerald-600' },
+    { label: 'Total Reservas', icon: Users, value: dashboard?.totalReservations, accent: 'bg-[#ef0a10]/10 text-[#ef0a10]' },
+    { label: 'Julio', icon: CalendarDays, value: dashboard?.reservationsByMonth?.['2026-07'], accent: 'bg-sky-950/40 text-sky-400' },
+    { label: 'Agosto', icon: CalendarRange, value: dashboard?.reservationsByMonth?.['2026-08'], accent: 'bg-violet-950/40 text-violet-400' },
+    { label: 'Fechas Completas', icon: CheckCircle2, value: dashboard?.fullDates, accent: 'bg-red-950/40 text-red-400' },
+    { label: 'Cupos Disponibles', icon: TrendingUp, value: dashboard?.availableSlots, accent: 'bg-emerald-950/40 text-emerald-400' },
   ]
 
   if (isLoading) {
@@ -82,8 +85,8 @@ export function AdminStatsGrid() {
                 <Badge variant="default">—</Badge>
               </div>
               <div>
-                <p className="text-sm text-slate-500">{label}</p>
-                <div className="mt-2 h-8 w-16 animate-pulse rounded-lg bg-slate-100" />
+                <p className="text-sm text-[#9ca3af]">{label}</p>
+                <div className="mt-2 h-8 w-16 animate-pulse rounded-lg bg-[#1e1e1e]" />
               </div>
             </CardContent>
           </Card>
@@ -112,8 +115,8 @@ export function AdminStatsGrid() {
               <Badge variant="default">{value ?? 0}</Badge>
             </div>
             <div>
-              <p className="text-sm text-slate-500">{label}</p>
-              <p className="mt-1 text-2xl font-semibold text-slate-900">{value ?? 0}</p>
+              <p className="text-sm text-[#9ca3af]">{label}</p>
+              <p className="mt-1 text-2xl font-semibold text-white">{value ?? 0}</p>
             </div>
           </CardContent>
         </Card>
@@ -179,15 +182,15 @@ export function AdminReservationsTable() {
   if (isLoading) {
     return (
       <Card glass className="overflow-hidden">
-        <div className="border-b border-slate-100 px-6 py-5">
+        <div className="border-b border-[#2d2d2d] px-6 py-5">
           <SectionTitle title="Reservas registradas" description="Cargando reservas..." />
         </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[960px] text-left">
             <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/80">
+              <tr className="border-b border-[#2d2d2d] bg-[#111111]/80">
                 {['Nombre', 'Correo', 'Edad', 'Teléfono', 'Fecha', 'Estado', 'Acciones'].map((column) => (
-                  <th key={column} className="px-6 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <th key={column} className="px-6 py-3 text-xs font-semibold uppercase tracking-wide text-[#9ca3af]">
                     {column}
                   </th>
                 ))}
@@ -195,10 +198,10 @@ export function AdminReservationsTable() {
             </thead>
             <tbody>
               {Array.from({ length: 5 }).map((_, i) => (
-                <tr key={i} className="border-b border-slate-100">
+                <tr key={i} className="border-b border-[#2d2d2d]">
                   {Array.from({ length: 7 }).map((_, j) => (
                     <td key={j} className="px-6 py-4">
-                      <div className="h-4 w-full max-w-28 animate-pulse rounded bg-slate-100" />
+                      <div className="h-4 w-full max-w-28 animate-pulse rounded bg-[#1e1e1e]" />
                     </td>
                   ))}
                 </tr>
@@ -224,7 +227,7 @@ export function AdminReservationsTable() {
 
   return (
     <Card glass className="overflow-hidden">
-      <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5">
+      <div className="flex items-center justify-between border-b border-[#2d2d2d] px-6 py-5">
         <SectionTitle
           title="Reservas registradas"
           description={`${data?.total ?? 0} reserva(s) en total.`}
@@ -237,11 +240,11 @@ export function AdminReservationsTable() {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[960px] text-left">
           <thead>
-            <tr className="border-b border-slate-100 bg-slate-50/80">
+            <tr className="border-b border-[#2d2d2d] bg-[#111111]/80">
               {['Nombre', 'Correo', 'Edad', 'Teléfono', 'Fecha', 'Estado', 'Acciones'].map((column) => (
                 <th
                   key={column}
-                  className="px-6 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500"
+                  className="px-6 py-3 text-xs font-semibold uppercase tracking-wide text-[#9ca3af]"
                 >
                   {column}
                 </th>
@@ -251,7 +254,7 @@ export function AdminReservationsTable() {
           <tbody>
             {reservations.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-6 py-12 text-center text-sm text-slate-500">
+                <td colSpan={7} className="px-6 py-12 text-center text-sm text-[#9ca3af]">
                   No hay reservas registradas.
                 </td>
               </tr>
@@ -261,21 +264,21 @@ export function AdminReservationsTable() {
               return (
                 <tr
                   key={reservation.id}
-                  className="border-b border-slate-100 transition-colors last:border-b-0 hover:bg-slate-50/50"
+                  className="border-b border-[#2d2d2d] transition-colors last:border-b-0 hover:bg-[#111111]/50"
                 >
-                  <td className="px-6 py-4 text-sm font-medium text-slate-900">
+                  <td className="px-6 py-4 text-sm font-medium text-white">
                     {reservation.participant.fullName}
                   </td>
-                  <td className="px-6 py-4 text-sm text-slate-600">
+                  <td className="px-6 py-4 text-sm text-[#9ca3af]">
                     {reservation.participant.email}
                   </td>
-                  <td className="px-6 py-4 text-sm text-slate-600">
+                  <td className="px-6 py-4 text-sm text-[#9ca3af]">
                     {reservation.participant.age}
                   </td>
-                  <td className="px-6 py-4 text-sm text-slate-600">
+                  <td className="px-6 py-4 text-sm text-[#9ca3af]">
                     {reservation.participant.phone}
                   </td>
-                  <td className="px-6 py-4 text-sm text-slate-600" title={formatFullDate(reservation.reservationDate)}>
+                  <td className="px-6 py-4 text-sm text-[#9ca3af]" title={formatFullDate(reservation.reservationDate)}>
                     {formatDate(reservation.reservationDate)}
                   </td>
                   <td className="px-6 py-4">
@@ -283,6 +286,22 @@ export function AdminReservationsTable() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        leftIcon={<Download className="size-3.5" />}
+                        onClick={() =>
+                          generatePasePdf({
+                            fullName: reservation.participant.fullName,
+                            email: reservation.participant.email,
+                            phone: reservation.participant.phone,
+                            age: reservation.participant.age,
+                            date: formatDate(reservation.reservationDate),
+                          })
+                        }
+                      >
+                        DESCARGA QR
+                      </Button>
                       <Button
                         size="sm"
                         variant="outline"
@@ -314,19 +333,20 @@ export function AdminReservationsTable() {
         </table>
       </div>
 
-      {reassignTarget && token && (
+      {reassignTarget && token && createPortal(
         <ReassignModal
           reservation={reassignTarget}
           token={token}
           open={!!reassignTarget}
           onClose={() => setReassignTarget(null)}
           onReassigned={handleReassigned}
-        />
+        />,
+        document.body,
       )}
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-between border-t border-slate-100 px-6 py-4">
-          <p className="text-sm text-slate-500">
+        <div className="flex items-center justify-between border-t border-[#2d2d2d] px-6 py-4">
+          <p className="text-sm text-[#9ca3af]">
             Página {page} de {totalPages}
           </p>
           <div className="flex gap-2">

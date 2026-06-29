@@ -16,19 +16,19 @@ const variantConfig: Record<
 > = {
   info: {
     icon: Info,
-    styles: 'border-indigo-200 bg-indigo-50/80 text-indigo-900',
+    styles: 'border-[#ef0a10]/30 bg-[#ef0a10]/10 text-[#ef0a10]',
   },
   success: {
     icon: CheckCircle2,
-    styles: 'border-emerald-200 bg-emerald-50/80 text-emerald-900',
+    styles: 'border-emerald-700 bg-emerald-950/40 text-emerald-400',
   },
   warning: {
     icon: TriangleAlert,
-    styles: 'border-amber-200 bg-amber-50/80 text-amber-900',
+    styles: 'border-amber-700 bg-amber-950/40 text-amber-400',
   },
   error: {
     icon: AlertCircle,
-    styles: 'border-red-200 bg-red-50/80 text-red-900',
+    styles: 'border-red-800 bg-red-950/40 text-red-400',
   },
 }
 

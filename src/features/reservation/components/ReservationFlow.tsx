@@ -21,18 +21,18 @@ function ReservationFlowContent() {
 
   if (!hasEnteredWizard) {
     return (
-      <div className="min-h-dvh bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-50 via-white to-slate-50">
+      <div className="min-h-dvh bg-[#0a0a0a]">
         <LandingModal />
       </div>
     )
   }
 
   return (
-    <div className="min-h-dvh bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-50 via-white to-indigo-50/30">
+    <div className="min-h-dvh bg-[#0a0a0a]">
       <PageContainer size="md" className="py-10 sm:py-14">
         <WizardStepper />
 
-        <Card glass className="overflow-hidden shadow-lg shadow-slate-900/5">
+        <Card glass className="overflow-hidden shadow-lg shadow-black/20">
           <CardContent className="p-4 sm:p-8">
             {step === ReservationStep.Calendar && <CalendarStep />}
 

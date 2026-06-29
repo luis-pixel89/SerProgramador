@@ -11,6 +11,9 @@ export const initialReservationState: ReservationState = {
   ticket: null,
 }
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const nameOnlyRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/
+
 export function isParticipantComplete(participant: Participant | null): boolean {
   if (!participant) {
     return false
@@ -19,9 +22,9 @@ export function isParticipantComplete(participant: Participant | null): boolean 
   const { fullName, email, phone, age } = participant
 
   return (
-    fullName.trim().length > 0 &&
-    email.trim().length > 0 &&
-    phone.trim().length > 0 &&
+    nameOnlyRegex.test(fullName.trim()) &&
+    emailRegex.test(email.trim()) &&
+    phone.replace(/\D/g, '').length === 10 &&
     age >= DEFAULT_RESERVATION_RULES.minAge
   )
 }
@@ -35,6 +38,10 @@ export function canAdvanceToConfirmation(state: ReservationState): boolean {
 }
 
 export function canGoToStep(state: ReservationState, step: ReservationStep): boolean {
+  if (state.step === ReservationStep.Confirmation && step !== ReservationStep.Confirmation) {
+    return false
+  }
+
   switch (step) {
     case ReservationStep.Calendar:
       return true

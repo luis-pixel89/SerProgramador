@@ -11,11 +11,11 @@ interface CalendarDayProps {
 
 const stateStyles: Record<Exclude<VisualState, 'empty'>, string> = {
   available:
-    'border-emerald-200 bg-emerald-50 text-emerald-800 hover:border-emerald-300 hover:bg-emerald-100',
+    'border-emerald-700 bg-emerald-950/40 text-emerald-300 hover:border-emerald-500 hover:bg-emerald-950/60',
   'last-spot':
-    'border-amber-200 bg-amber-50 text-amber-800 hover:border-amber-300 hover:bg-amber-100',
-  full: 'border-red-200 bg-red-50 text-red-400 line-through opacity-70',
-  disabled: 'border-transparent bg-slate-50 text-slate-300',
+    'border-amber-700 bg-amber-950/40 text-amber-300 hover:border-amber-500 hover:bg-amber-950/60',
+  full: 'border-red-800 bg-red-950/30 text-red-500 line-through opacity-70',
+  disabled: 'border-transparent bg-[#111111] text-[#6b7280]',
 }
 
 function mapStatusToVisual(status: DayAvailabilityStatus): VisualState {
@@ -61,7 +61,7 @@ export function CalendarDay({ day, onSelect, isSelected }: CalendarDayProps) {
         stateStyles[visualState as Exclude<VisualState, 'empty'>],
         day.isSelectable && 'cursor-pointer',
         !day.isSelectable && 'cursor-not-allowed',
-        isSelected && 'ring-2 ring-red-500 ring-offset-1',
+        isSelected && 'ring-2 ring-[#ef0a10] ring-offset-2 ring-offset-[#1e1e1e]',
       )}
     >
       <span>{day.day}</span>

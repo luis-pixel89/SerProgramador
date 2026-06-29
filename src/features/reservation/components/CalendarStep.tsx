@@ -1,7 +1,8 @@
+import { useEffect, useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { AlertCircle, Loader2, RefreshCw } from 'lucide-react'
 import { Button, SectionTitle } from '@/components'
-import { cn } from '@/utils'
+import { cn, scrollIntoViewIfNeeded } from '@/utils'
 import { fetchAvailability } from '@/services'
 import { useReservation } from '../hooks'
 import { formatDisplayDate } from '../utils/displayDate'
@@ -22,6 +23,21 @@ export function CalendarStep() {
     canAdvanceFromCalendar,
   } = useReservation()
 
+  const continueActionsRef = useRef<HTMLDivElement>(null)
+  const shouldScrollToContinueRef = useRef(false)
+
+  const handleSelectDate = (date: Date) => {
+    shouldScrollToContinueRef.current = true
+    setSelectedDate(date)
+  }
+
+  useEffect(() => {
+    if (!shouldScrollToContinueRef.current || !selectedDate) return
+
+    shouldScrollToContinueRef.current = false
+    scrollIntoViewIfNeeded(continueActionsRef.current)
+  }, [selectedDate])
+
   const { data: availability, isLoading, isError, refetch } = useQuery({
     queryKey: ['availability', 'all'],
     queryFn: () => fetchAvailability(),
@@ -32,7 +48,7 @@ export function CalendarStep() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="size-8 animate-spin text-slate-400" />
+        <Loader2 className="size-8 animate-spin text-[#6b7280]" />
       </div>
     )
   }
@@ -41,7 +57,7 @@ export function CalendarStep() {
     return (
       <div className="flex flex-col items-center gap-4 py-20">
         <AlertCircle className="size-10 text-red-400" />
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-[#9ca3af]">
           No se pudo cargar la disponibilidad. Verifica que el servidor esté funcionando.
         </p>
         <Button variant="outline" size="sm" onClick={() => refetch()}>
@@ -68,11 +84,11 @@ export function CalendarStep() {
         <LegendItem color="bg-emerald-500" label="Disponible" />
         <LegendItem color="bg-amber-500" label="Último cupo" />
         <LegendItem color="bg-red-500" label="Completo" />
-        <LegendItem color="bg-slate-300" label="No disponible" />
+        <LegendItem color="bg-[#4a4a4a]" label="No disponible" />
       </div>
 
       {selectedDate && (
-        <div className="rounded-2xl border border-indigo-200 bg-indigo-50/80 px-4 py-3 text-sm text-indigo-900">
+        <div className="rounded-2xl border border-[#ef0a10]/30 bg-[#ef0a10]/10 px-4 py-3 text-sm text-[#ef0a10]">
           Fecha seleccionada:{' '}
           <span className="font-medium">{formatDisplayDate(selectedDate)}</span>
         </div>
@@ -82,12 +98,15 @@ export function CalendarStep() {
         reservations={[]}
         months={CAMPAIGN_MONTHS}
         maxSlotsPerDay={maxSlotsPerDay}
-        onSelectDate={setSelectedDate}
+        onSelectDate={handleSelectDate}
         calendarMonths={calendarMonths}
         selectedDate={selectedDate}
       />
 
-      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
+      <div
+        ref={continueActionsRef}
+        className="flex scroll-mt-20 scroll-mb-6 flex-col-reverse gap-3 sm:flex-row sm:justify-between"
+      >
         <Button variant="ghost" onClick={resetReservation}>
           Cancelar
         </Button>
@@ -101,7 +120,7 @@ export function CalendarStep() {
 
 function LegendItem({ color, label }: { color: string; label: string }) {
   return (
-    <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm">
+    <div className="inline-flex items-center gap-2 rounded-full border border-[#2d2d2d] bg-[#1e1e1e] px-3 py-1.5 text-xs font-medium text-[#9ca3af] shadow-sm">
       <span className={cn('size-2 rounded-full', color)} />
       {label}
     </div>

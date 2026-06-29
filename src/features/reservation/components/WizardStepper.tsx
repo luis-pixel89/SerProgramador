@@ -24,19 +24,19 @@ export function WizardStepper() {
                 type="button"
                 onClick={() => goToStep(step)}
                 disabled={!isEnabled}
-                className={cn(
-                  'group flex w-full flex-col items-center gap-2 rounded-2xl px-2 py-3 transition-colors',
-                  isEnabled && 'cursor-pointer hover:bg-slate-100/80',
-                  !isEnabled && 'cursor-not-allowed opacity-60',
+                  className={cn(
+                    'group flex w-full flex-col items-center gap-2 rounded-2xl px-2 py-3 transition-colors',
+                    isEnabled && 'cursor-pointer hover:bg-[#1e1e1e]/80',
+                    !isEnabled && 'cursor-not-allowed opacity-60',
                 )}
               >
                 <span
                   className={cn(
                     'flex size-9 items-center justify-center rounded-full text-sm font-semibold transition-all',
                     isActive
-                      ? 'bg-slate-900 text-white shadow-md shadow-slate-900/15 ring-1 ring-slate-900'
-                      : 'bg-slate-100 text-slate-500 ring-1 ring-slate-200',
-                    isEnabled && !isActive && 'group-hover:bg-white group-hover:ring-indigo-200',
+                      ? 'bg-[#ef0a10] text-white shadow-md shadow-[#ef0a10]/20 ring-1 ring-[#ef0a10]'
+                      : 'bg-[#1e1e1e] text-[#9ca3af] ring-1 ring-[#2d2d2d]',
+                    isEnabled && !isActive && 'group-hover:bg-[#111111] group-hover:ring-[#ef0a10]/50',
                   )}
                 >
                   {number}
@@ -44,14 +44,14 @@ export function WizardStepper() {
                 <span
                   className={cn(
                     'hidden text-xs font-medium sm:block',
-                    isActive ? 'text-slate-900' : 'text-slate-500',
+                    isActive ? 'text-white' : 'text-[#9ca3af]',
                   )}
                 >
                   {label}
                 </span>
               </button>
               {index < steps.length - 1 && (
-                <div className="mx-1 hidden h-px flex-1 bg-slate-200 sm:block" aria-hidden="true" />
+                <div className="mx-1 hidden h-px flex-1 bg-[#2d2d2d] sm:block" aria-hidden="true" />
               )}
             </li>
           )

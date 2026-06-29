@@ -4,22 +4,23 @@
   --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
     Roboto, sans-serif;
 
-  --color-surface: #ffffff;
-  --color-surface-muted: #f8fafc;
-  --color-border: #e2e8f0;
-  --color-text: #0f172a;
-  --color-text-muted: #64748b;
-  --color-accent: #6366f1;
-  --color-accent-hover: #4f46e5;
+  --color-surface: #1e1e1e;
+  --color-surface-muted: #0a0a0a;
+  --color-border: #2d2d2d;
+  --color-text: #ffffff;
+  --color-text-muted: #9ca3af;
+  --color-text-dim: #6b7280;
+  --color-accent: #ef0a10;
+  --color-accent-hover: #c8171e;
   --color-success: #22c55e;
   --color-warning: #eab308;
   --color-danger: #ef4444;
 
-  --color-krake-bg: #0a0a0f;
-  --color-krake-surface: #12121a;
-  --color-krake-red: #dc2626;
-  --color-krake-red-hover: #b91c1c;
-  --color-krake-border: rgba(255, 255, 255, 0.05);
+  --color-krake-bg: #0a0a0a;
+  --color-krake-surface: #111111;
+  --color-krake-red: #ef0a10;
+  --color-krake-red-hover: #c8171e;
+  --color-krake-border: #2d2d2d;
 
   --animate-pulse-slow: pulse-slow 4s ease-in-out infinite;
   --animate-float: float 6s ease-in-out infinite;
@@ -55,7 +56,7 @@
   }
 
   html {
-    color-scheme: light;
+    color-scheme: dark;
   }
 
   body {
@@ -66,6 +67,10 @@
     background-color: var(--color-surface-muted);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: rgba(239, 10, 16, 0.3);
   }
 
   #root {

@@ -15,13 +15,13 @@ export function CalendarMonthGrid({ month, onSelectDate, selectedDate }: Calenda
     <Card glass>
       <CardContent className="space-y-4 p-4 sm:p-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-slate-900">{month.label}</h3>
+          <h3 className="text-lg font-semibold text-white">{month.label}</h3>
           <Badge variant="info">Lun – Vie</Badge>
         </div>
 
         <div className="grid grid-cols-7 gap-1 text-center sm:gap-2">
           {weekDays.map((day) => (
-            <div key={day} className="py-2 text-xs font-medium text-slate-400">
+            <div key={day} className="py-2 text-xs font-medium text-[#6b7280]">
               {day}
             </div>
           ))}

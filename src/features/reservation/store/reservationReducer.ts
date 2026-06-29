@@ -53,6 +53,10 @@ export function reservationReducer(
     }
 
     case 'PREVIOUS_STEP': {
+      if (state.step === ReservationStep.Confirmation) {
+        return state
+      }
+
       const previousStep = getPreviousStep(state.step)
       if (!previousStep) {
         return state
