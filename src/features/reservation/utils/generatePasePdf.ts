@@ -1,9 +1,43 @@
 import QRCode from 'qrcode'
 import jsPDF from 'jspdf'
+import paseTemplateBg from '@/assets/formato-krakedev-template.png'
 import { CAMPAIGN_ADDRESS, CAMPAIGN_SCHEDULE } from '../domain/campaignDisplay'
 
 const QR_DATA = 'https://maps.app.goo.gl/y9kpVCUan5joQ8C49'
 const PDF_FILENAME = 'pase-krakedev.pdf'
+
+/** Márgenes del membrete (formato krakedev.docx, tamaño A4). */
+const TEMPLATE_MARGINS = {
+  top: 25,
+  right: 30,
+  bottom: 25,
+  left: 30,
+} as const
+
+const LABEL_OFFSET = 40
+const TEXT_COLOR = { r: 0, g: 0, b: 0 } as const
+
+function setTextBlack(pdf: jsPDF) {
+  pdf.setTextColor(TEXT_COLOR.r, TEXT_COLOR.g, TEXT_COLOR.b)
+}
+
+function drawField(
+  pdf: jsPDF,
+  label: string,
+  value: string,
+  y: number,
+  valueX: number,
+  labelX: number,
+  valueMaxWidth: number,
+): number {
+  pdf.setFontSize(9)
+  pdf.setFont('helvetica', 'normal')
+  setTextBlack(pdf)
+  pdf.text(label, labelX, y)
+  const lines = pdf.splitTextToSize(value, valueMaxWidth)
+  pdf.text(lines, valueX, y)
+  return y + lines.length * 5 + 2
+}
 
 export async function generatePasePdf(data: {
   fullName: string
@@ -18,29 +52,28 @@ export async function generatePasePdf(data: {
     color: { dark: '#0f172a', light: '#ffffff' },
   })
 
-  const pdf = new jsPDF({ unit: 'mm', format: 'a5' })
+  const pdf = new jsPDF({ unit: 'mm', format: 'a4' })
   const pageW = pdf.internal.pageSize.getWidth()
-  const margin = 15
-  let y = margin
+  const pageH = pdf.internal.pageSize.getHeight()
+  const contentLeft = TEMPLATE_MARGINS.left
+  const valueX = contentLeft + LABEL_OFFSET
+  const valueMaxWidth = pageW - TEMPLATE_MARGINS.right - valueX
 
-  pdf.setFillColor(15, 23, 42)
-  pdf.rect(0, 0, pageW, 28, 'F')
-  pdf.setTextColor(255, 255, 255)
-  pdf.setFontSize(18)
-  pdf.setFont('helvetica', 'bold')
-  pdf.text('Krakedev', pageW / 2, 16, { align: 'center' })
-  pdf.setFontSize(9)
-  pdf.setFont('helvetica', 'normal')
-  pdf.text('Pase de entrada — Se Programador por un Dia', pageW / 2, 22, { align: 'center' })
+  pdf.addImage(paseTemplateBg, 'PNG', 0, 0, pageW, pageH)
 
-  y = 38
-  pdf.setTextColor(15, 23, 42)
-  pdf.setFontSize(11)
+  let y = TEMPLATE_MARGINS.top + 48
+
+  setTextBlack(pdf)
+  pdf.setFontSize(16)
   pdf.setFont('helvetica', 'bold')
-  pdf.text('Datos del Participante', margin, y)
-  y += 8
-  pdf.setFont('helvetica', 'normal')
-  pdf.setFontSize(9)
+  pdf.text('Pase de entrada — Se Programador por un Dia', pageW / 2, y, { align: 'center' })
+
+  y += 14
+  pdf.setFontSize(12)
+  pdf.setFont('helvetica', 'bold')
+  pdf.text('Datos del Participante', contentLeft, y)
+
+  y += 9
 
   const fields = [
     ['Nombre', data.fullName],
@@ -53,34 +86,35 @@ export async function generatePasePdf(data: {
   ] as const
 
   for (const [label, value] of fields) {
-    pdf.setTextColor(100, 116, 139)
-    pdf.text(label, margin, y)
-    pdf.setTextColor(15, 23, 42)
-    pdf.text(value, margin + 40, y)
-    y += 6
+    y = drawField(pdf, label, value, y, valueX, contentLeft, valueMaxWidth)
   }
 
-  y += 6
+  y += 8
   const qrSize = 50
   const qrX = pageW / 2 - qrSize / 2
+
+  pdf.setFillColor(255, 255, 255)
+  pdf.roundedRect(qrX - 2, y - 2, qrSize + 4, qrSize + 4, 2, 2, 'F')
   pdf.addImage(qrDataUrl, 'PNG', qrX, y, qrSize, qrSize)
-  y += qrSize + 4
-  pdf.setFontSize(7)
-  pdf.setTextColor(148, 163, 184)
+
+  y += qrSize + 5
+  pdf.setFontSize(8)
+  pdf.setFont('helvetica', 'normal')
+  setTextBlack(pdf)
   pdf.text('Escanea para ver la ubicacion', pageW / 2, y, { align: 'center' })
 
-  y += 10
-  if (y > pdf.internal.pageSize.getHeight() - margin) {
-    pdf.addPage()
-    y = margin
+  y += 12
+  const footerY = pageH - TEMPLATE_MARGINS.bottom - 8
+  if (y < footerY) {
+    y = footerY
   }
 
-  pdf.setDrawColor(226, 232, 240)
-  pdf.setLineWidth(0.5)
-  pdf.line(margin, y, pageW - margin, y)
-  y += 4
-  pdf.setFontSize(7)
-  pdf.setTextColor(148, 163, 184)
+  pdf.setDrawColor(239, 10, 16)
+  pdf.setLineWidth(0.3)
+  pdf.line(contentLeft, y, pageW - TEMPLATE_MARGINS.right, y)
+  y += 5
+  pdf.setFontSize(8)
+  setTextBlack(pdf)
   pdf.text('Krakedev — Escuela de Programacion', pageW / 2, y, { align: 'center' })
 
   pdf.save(PDF_FILENAME)

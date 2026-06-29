@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ROUTES } from '@/constants'
-import { KrakeLogo } from '@/features/krakedev/components/KrakeLogo'
+import krakedevLogo from '@/assets/krakedev-logo.png'
 import { cn } from '@/utils'
 
 interface NavbarProps {
@@ -17,15 +17,11 @@ export function Navbar({ variant = 'default', className }: NavbarProps) {
       )}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link to={ROUTES.HOME} className="flex items-center gap-2.5">
-          <KrakeLogo className="size-9 shrink-0" />
-          <div className="leading-tight">
-            <p className="text-sm font-semibold text-white">Krakedev</p>
-            <p className="text-xs text-[#9ca3af]">
-              {variant === 'admin' ? 'Panel Admin' : 'Reservas'}
-            </p>
-          </div>
-        </Link>
+        <img
+          src={krakedevLogo}
+          alt="Krakedev"
+          className="h-11 w-auto max-w-[10.5rem] shrink-0 object-contain object-left sm:h-12 sm:max-w-[12.5rem] lg:h-14 lg:max-w-[15rem]"
+        />
 
         <nav className="flex items-center gap-1">
           {variant === 'default' ? (
