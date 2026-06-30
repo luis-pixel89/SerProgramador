@@ -11,7 +11,7 @@ interface NavbarProps {
 
 export function Navbar({ variant = 'default', className }: NavbarProps) {
   const navigate = useNavigate()
-  const [logoClickCount, setLogoClickCount] = useState(0)
+  const [, setLogoClickCount] = useState(0)
   const resetTimerRef = useRef<number | null>(null)
 
   useEffect(() => {
