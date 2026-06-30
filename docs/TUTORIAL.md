@@ -40,12 +40,12 @@ El flujo está envuelto en `ReservationProvider` (Context + useReducer) que mane
 
 **Componente:** `src/features/reservation/components/LandingModal.tsx`
 
-Muestra información de la campaña con tarjetas de experiencia. Incluye un botón "Cancelar Reserva" que abre WhatsApp (`wa.me/593982393311`) con mensaje predefinido — implementado como un `<a>` con estilo de botón outline.
+Muestra información de la campaña con tarjetas de experiencia. Incluye un botón "Cancelar Reserva" que abre WhatsApp (`wa.me/593984127670`) con mensaje predefinido — implementado como un `<a>` con estilo de botón outline.
 
 ```tsx
 // Cancelar vía WhatsApp
 <a
-  href="https://wa.me/593982393311?text=...cancelar mi reserva..."
+  href="https://wa.me/593984127670?text=...cancelar mi reserva..."
   target="_blank"
   rel="noopener noreferrer"
   className="inline-flex items-center gap-2 ..."

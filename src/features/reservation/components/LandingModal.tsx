@@ -137,7 +137,7 @@ export function LandingModal() {
 
           <ModalFooter className="flex-col gap-3 sm:flex-row sm:justify-between">
             <a
-              href="https://wa.me/593982393311?text=Hola%2C%20quiero%20cancelar%20mi%20reserva%20para%20S%C3%A9%20Programador%20por%20un%20D%C3%ADa"
+              href="https://wa.me/593984127670?text=Hola%2C%20quiero%20cancelar%20mi%20reserva%20para%20S%C3%A9%20Programador%20por%20un%20D%C3%ADa"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#2d2d2d] bg-transparent px-6 py-3 text-base font-medium text-[#9ca3af] shadow-sm transition-colors hover:bg-[#111111] hover:text-white sm:w-auto"
