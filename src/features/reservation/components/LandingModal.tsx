@@ -69,7 +69,7 @@ export function LandingModal() {
     <>
       <ModalOverlay />
       <Modal>
-        <ModalContent className="max-w-3xl">
+        <ModalContent className="flex max-h-[95dvh] flex-col max-w-3xl">
           {error && (
             <div className="px-6 pt-6">
               <Alert variant="error" title={error} />
@@ -88,7 +88,7 @@ export function LandingModal() {
             </p>
           </ModalHeader>
 
-          <ModalBody>
+          <ModalBody className="flex-1 overflow-y-auto min-h-0 space-y-6 p-6 sm:p-8">
             <div className="grid gap-3 sm:grid-cols-2">
               {experienceCards.map(({ icon: Icon, title, description }) => (
                 <Card key={title} hover glass className="overflow-hidden">
