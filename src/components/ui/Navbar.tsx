@@ -51,21 +51,21 @@ export function Navbar({ variant = 'default', className }: NavbarProps) {
         className,
       )}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="relative mx-auto flex h-16 max-w-7xl items-center px-4 sm:px-6 lg:px-8">
         <button
           type="button"
           onClick={handleLogoClick}
-          className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+          className="absolute left-4 top-1/2 -translate-y-1/2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 sm:left-6 lg:left-8"
           aria-label="Krakedev"
         >
           <img
             src={krakedevLogo}
             alt="Krakedev"
-            className="h-11 w-auto max-w-[10.5rem] shrink-0 object-contain object-left drop-shadow-[0_0_6px_rgba(255,255,255,0.15)] brightness-110 sm:h-12 sm:max-w-[12.5rem] lg:h-14 lg:max-w-[15rem]"
+            className="h-32 w-auto shrink-0 object-contain object-left drop-shadow-[0_0_6px_rgba(255,255,255,0.15)] brightness-110"
           />
         </button>
 
-        <nav className="flex items-center gap-1">
+        <nav className="ml-auto flex items-center gap-1">
           {variant === 'default' ? null : (
             <Link
               to={ROUTES.HOME}
