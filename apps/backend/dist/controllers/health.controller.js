@@ -3,13 +3,7 @@ import pkg from '../../package.json' with { type: 'json' };
 const { version } = pkg;
 const startTime = Date.now();
 export function healthCheck(_req, res) {
-    res.json({
-        status: 'ok',
-        service: 'serprogramador-api',
-        version,
-        uptime: Math.floor((Date.now() - startTime) / 1000),
-        timestamp: new Date().toISOString(),
-    });
+    res.json({ status: 'ok' });
 }
 export async function readinessCheck(_req, res) {
     try {
