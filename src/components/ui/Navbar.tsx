@@ -61,7 +61,7 @@ export function Navbar({ variant = 'default', className }: NavbarProps) {
           <img
             src={krakedevLogo}
             alt="Krakedev"
-            className="h-11 w-auto max-w-[10.5rem] shrink-0 object-contain object-left sm:h-12 sm:max-w-[12.5rem] lg:h-14 lg:max-w-[15rem]"
+            className="h-11 w-auto max-w-[10.5rem] shrink-0 object-contain object-left drop-shadow-[0_0_6px_rgba(255,255,255,0.15)] brightness-110 sm:h-12 sm:max-w-[12.5rem] lg:h-14 lg:max-w-[15rem]"
           />
         </button>
 
