@@ -29,6 +29,7 @@ export declare class GetTicketUseCase {
         email: string;
         phone: string;
         age: number;
+        advisor: string | null;
         reservationDate: string;
         status: import("../shared/types/reservation.types.js").ReservationStatusDto;
         qrCode: string | null;

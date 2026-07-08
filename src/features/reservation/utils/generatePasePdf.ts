@@ -101,7 +101,7 @@ function drawActivitiesPage(pdf: jsPDF, pageW: number, pageH: number, contentLef
   y += 5
   pdf.setFontSize(8)
   setTextBlack(pdf)
-  pdf.text('Krakedev — Escuela de Programacion', pageW / 2, y, { align: 'center' })
+  pdf.text('Krakedev — Escuela de Programación', pageW / 2, y, { align: 'center' })
 }
 
 export async function generatePasePdf(data: {
@@ -131,7 +131,7 @@ export async function generatePasePdf(data: {
   setTextBlack(pdf)
   pdf.setFontSize(16)
   pdf.setFont('helvetica', 'bold')
-  pdf.text('Pase de entrada — Se Programador por un Dia', pageW / 2, y, { align: 'center' })
+  pdf.text('Pase de entrada — Sé Programador por un Día', pageW / 2, y, { align: 'center' })
 
   y += 14
   pdf.setFontSize(12)
@@ -147,7 +147,7 @@ export async function generatePasePdf(data: {
     ['Edad', String(data.age)],
     ['Fecha', data.date],
     ['Horario', CAMPAIGN_SCHEDULE],
-    ['Direccion', CAMPAIGN_ADDRESS],
+    ['Dirección', CAMPAIGN_ADDRESS],
   ] as const
 
   for (const [label, value] of fields) {
@@ -180,7 +180,7 @@ export async function generatePasePdf(data: {
   y += 5
   pdf.setFontSize(8)
   setTextBlack(pdf)
-  pdf.text('Krakedev — Escuela de Programacion', pageW / 2, y, { align: 'center' })
+  pdf.text('Krakedev — Escuela de Programación', pageW / 2, y, { align: 'center' })
 
   drawActivitiesPage(pdf, pageW, pageH, contentLeft)
 

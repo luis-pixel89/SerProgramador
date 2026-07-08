@@ -13,6 +13,7 @@ model Participant {
   email        String        @unique
   phone        String
   age          Int
+  advisor      String?
   createdAt    DateTime      @default(now())
   reservations Reservation[]
 

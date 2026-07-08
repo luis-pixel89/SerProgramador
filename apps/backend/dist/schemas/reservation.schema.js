@@ -8,6 +8,8 @@ export const createReservationSchema = z.object({
     phone: z.string().trim().regex(/^\d{10}$/, 'El teléfono debe tener exactamente 10 dígitos.'),
     age: z.coerce.number().int().min(campaignConfig.minAge),
     reservationDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    hasAdvisor: z.boolean(),
+    advisorName: z.string().nullable().optional(),
 });
 export const loginSchema = z.object({
     username: z.string().trim().min(1),
@@ -19,6 +21,8 @@ export const updateReservationSchema = z.object({
     phone: z.string().trim().regex(/^\d{10}$/).optional(),
     age: z.coerce.number().int().min(campaignConfig.minAge).optional(),
     status: z.enum(['confirmed', 'cancelled', 'completed']).optional(),
+    hasAdvisor: z.boolean().optional(),
+    advisorName: z.string().nullable().optional(),
 });
 export const reassignDateSchema = z.object({
     reservationDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),

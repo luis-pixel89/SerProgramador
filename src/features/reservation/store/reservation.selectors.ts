@@ -19,14 +19,19 @@ export function isParticipantComplete(participant: Participant | null): boolean 
     return false
   }
 
-  const { fullName, email, phone, age } = participant
+  const { fullName, email, phone, age, hasAdvisor, advisorName } = participant
 
-  return (
+  const basicValid =
     nameOnlyRegex.test(fullName.trim()) &&
     emailRegex.test(email.trim()) &&
     phone.replace(/\D/g, '').length === 10 &&
     age >= DEFAULT_RESERVATION_RULES.minAge
-  )
+
+  if (!basicValid) return false
+
+  if (hasAdvisor && !advisorName) return false
+
+  return true
 }
 
 export function canAdvanceToForm(state: ReservationState): boolean {

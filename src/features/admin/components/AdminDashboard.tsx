@@ -170,6 +170,7 @@ export function AdminReservationsTable() {
       'Correo': r.participant.email,
       'Edad': r.participant.age,
       'Teléfono': r.participant.phone,
+      'Asesor': r.participant.advisor ?? '',
       'Fecha': formatDate(r.reservationDate),
       'Estado': getStatusBadge(r.status).label,
     }))

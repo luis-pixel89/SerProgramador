@@ -72,6 +72,7 @@ export class UpdateReservationUseCase {
             ...(data.email !== undefined ? { email: data.email } : {}),
             ...(data.phone !== undefined ? { phone: data.phone } : {}),
             ...(data.age !== undefined ? { age: data.age } : {}),
+            ...(data.advisorName !== undefined ? { advisor: data.advisorName } : {}),
         };
         const updated = await this.reservationRepository.update(id, {
             participant: Object.keys(participantUpdate).length > 0 ? participantUpdate : undefined,
@@ -186,6 +187,7 @@ function mapReservationDetail(reservation) {
             email: reservation.participant.email,
             phone: reservation.participant.phone,
             age: reservation.participant.age,
+            advisor: reservation.participant.advisor,
         },
         ticket: reservation.ticket
             ? {

@@ -5,6 +5,8 @@ export declare const createReservationSchema: z.ZodObject<{
     phone: z.ZodString;
     age: z.ZodCoercedNumber<unknown>;
     reservationDate: z.ZodString;
+    hasAdvisor: z.ZodBoolean;
+    advisorName: z.ZodNullable<z.ZodOptional<z.ZodString>>;
 }, z.core.$strip>;
 export declare const loginSchema: z.ZodObject<{
     username: z.ZodString;
@@ -20,6 +22,8 @@ export declare const updateReservationSchema: z.ZodObject<{
         cancelled: "cancelled";
         completed: "completed";
     }>>;
+    hasAdvisor: z.ZodOptional<z.ZodBoolean>;
+    advisorName: z.ZodNullable<z.ZodOptional<z.ZodString>>;
 }, z.core.$strip>;
 export declare const reassignDateSchema: z.ZodObject<{
     reservationDate: z.ZodString;

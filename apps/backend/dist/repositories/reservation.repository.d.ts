@@ -7,6 +7,7 @@ export type ReservationWithRelations = Reservation & {
         email: string;
         phone: string;
         age: number;
+        advisor: string | null;
     };
     ticket: {
         id: string;
@@ -40,6 +41,7 @@ export declare class ReservationRepository {
             email: string;
             phone: string;
             age: number;
+            advisor: string | null;
         }>;
         status?: ReservationStatus;
     }): Promise<ReservationWithRelations>;
@@ -56,6 +58,7 @@ export declare class TicketRepository {
                 email: string;
                 phone: string;
                 age: number;
+                advisor: string | null;
             };
         } & {
             reservationNumber: string;
@@ -84,6 +87,7 @@ export declare class TicketRepository {
                 email: string;
                 phone: string;
                 age: number;
+                advisor: string | null;
             };
         } & {
             reservationNumber: string;

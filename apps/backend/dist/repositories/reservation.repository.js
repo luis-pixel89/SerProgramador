@@ -109,6 +109,7 @@ export class ReservationRepository {
             email: data.email.toLowerCase(),
             phone: data.phone,
             age: data.age,
+            advisor: data.hasAdvisor ? data.advisorName : null,
         };
         const [counter] = await prisma.$transaction([
             prisma.reservationCounter.upsert({

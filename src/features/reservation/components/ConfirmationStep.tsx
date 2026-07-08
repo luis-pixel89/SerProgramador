@@ -53,6 +53,8 @@ export function ConfirmationStep() {
       phone: sanitizedPhone,
       age: participant.age,
       reservationDate: toDateKey(selectedDate),
+      hasAdvisor: participant.hasAdvisor,
+      advisorName: participant.hasAdvisor ? participant.advisorName : null,
     })
       .then(() => setApiStatus('done'))
       .catch((error: Error) => {

@@ -1,9 +1,12 @@
-import { Calendar, Mail, Phone, User } from 'lucide-react'
+import { Calendar, Mail, Phone, User, UserCheck } from 'lucide-react'
 import { Alert, Button, Card, CardContent, Input, SectionTitle } from '@/components'
 import { DEFAULT_RESERVATION_RULES } from '../domain/reservationConfig'
 import { useReservation } from '../hooks'
 import { EMPTY_PARTICIPANT, type Participant } from '../types'
 import { formatDisplayDate } from '../utils/displayDate'
+import { cn } from '@/utils'
+
+const ADVISOR_OPTIONS = ['Josselyn', 'Paul']
 
 export function FormStep() {
   const {
@@ -50,6 +53,11 @@ export function FormStep() {
       : formData.age < DEFAULT_RESERVATION_RULES.minAge
         ? `Debes tener al menos ${DEFAULT_RESERVATION_RULES.minAge} años para participar.`
         : undefined
+
+  const advisorError =
+    formData.hasAdvisor && !formData.advisorName
+      ? 'Selecciona un asesor.'
+      : undefined
 
   return (
     <div className="space-y-6">
@@ -109,6 +117,61 @@ export function FormStep() {
                 error={ageError}
               />
             </div>
+
+            <div className="sm:col-span-2 space-y-2">
+              <label className="block text-sm font-medium text-white">¿Tienes asesor?</label>
+              <div className="flex gap-3">
+                {[false, true].map((value) => (
+                  <button
+                    key={String(value)}
+                    type="button"
+                    onClick={() => {
+                      updateField('hasAdvisor', value as Participant['hasAdvisor'])
+                      if (!value) updateField('advisorName', null)
+                    }}
+                    className={cn(
+                      'flex-1 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all duration-200',
+                      formData.hasAdvisor === value
+                        ? 'border-[#ef0a10] bg-[#ef0a10]/10 text-white'
+                        : 'border-[#2d2d2d] bg-[#111111] text-[#9ca3af] hover:border-[#4a4a4a] hover:text-white',
+                    )}
+                  >
+                    {value ? 'Sí' : 'No'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {formData.hasAdvisor && (
+              <div className="sm:col-span-2 space-y-2">
+                <label className="block text-sm font-medium text-white">Selecciona tu asesor</label>
+                <div className="relative">
+                  <div className="pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-[#6b7280]">
+                    <UserCheck className="size-4" />
+                  </div>
+                  <select
+                    value={formData.advisorName ?? ''}
+                    onChange={(e) => updateField('advisorName', e.target.value || null)}
+                    className={cn(
+                      'h-11 w-full rounded-xl border bg-[#111111] pl-10 pr-3.5 text-sm text-white shadow-sm',
+                      'appearance-none transition-colors duration-200',
+                      'focus:border-[#ef0a10] focus:outline-none focus:ring-2 focus:ring-[#ef0a10]/20',
+                      advisorError ? 'border-red-600' : 'border-[#2d2d2d]',
+                    )}
+                  >
+                    <option value="" disabled className="bg-[#111111]">
+                      Selecciona un asesor
+                    </option>
+                    {ADVISOR_OPTIONS.map((advisor) => (
+                      <option key={advisor} value={advisor} className="bg-[#111111]">
+                        {advisor}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {advisorError && <p className="text-sm text-red-400">{advisorError}</p>}
+              </div>
+            )}
           </div>
 
           <div className="rounded-2xl border border-emerald-700 bg-emerald-950/40 p-4">

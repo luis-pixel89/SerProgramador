@@ -35,6 +35,7 @@ export declare class ListReservationsUseCase {
                 email: string;
                 phone: string;
                 age: number;
+                advisor: string | null;
             };
             ticket: {
                 id: string;
@@ -62,6 +63,7 @@ export declare class GetReservationUseCase {
             email: string;
             phone: string;
             age: number;
+            advisor: string | null;
         };
         ticket: {
             id: string;
@@ -77,6 +79,7 @@ export declare class UpdateReservationUseCase {
         email?: string;
         phone?: string;
         age?: number;
+        advisorName?: string | null;
         status?: 'confirmed' | 'cancelled' | 'completed';
     }): Promise<{
         id: string;
@@ -90,6 +93,7 @@ export declare class UpdateReservationUseCase {
             email: string;
             phone: string;
             age: number;
+            advisor: string | null;
         };
         ticket: {
             id: string;
@@ -117,6 +121,7 @@ export declare class ReassignReservationDateUseCase {
             email: string;
             phone: string;
             age: number;
+            advisor: string | null;
         };
         ticket: {
             id: string;

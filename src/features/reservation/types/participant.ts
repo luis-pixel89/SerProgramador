@@ -3,6 +3,8 @@ export interface Participant {
   email: string
   phone: string
   age: number
+  hasAdvisor: boolean
+  advisorName: string | null
 }
 
 export const EMPTY_PARTICIPANT: Participant = {
@@ -10,4 +12,6 @@ export const EMPTY_PARTICIPANT: Participant = {
   email: '',
   phone: '',
   age: 0,
+  hasAdvisor: false,
+  advisorName: null,
 }

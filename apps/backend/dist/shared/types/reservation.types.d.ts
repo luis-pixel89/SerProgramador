@@ -14,6 +14,8 @@ export interface CreateReservationDto {
     phone: string;
     age: number;
     reservationDate: string;
+    hasAdvisor: boolean;
+    advisorName: string | null;
 }
 export interface CreateReservationResultDto {
     reservationId: string;

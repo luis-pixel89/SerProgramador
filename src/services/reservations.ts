@@ -7,6 +7,8 @@ export interface CreateReservationData {
   phone: string
   age: number
   reservationDate: string
+  hasAdvisor: boolean
+  advisorName: string | null
 }
 
 export interface CreateReservationResult {
@@ -52,6 +54,7 @@ export interface ReservationListItem {
     email: string
     phone: string
     age: number
+    advisor: string | null
   }
   ticket: { id: string; ticketNumber: string } | null
 }
