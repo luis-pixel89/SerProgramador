@@ -1,6 +1,6 @@
 import { ReservationStatus } from '@prisma/client';
 import jwt from 'jsonwebtoken';
-import { campaignConfig, env } from '../config/env.js';
+import { campaignConfig, env, getMaxSlotsForDate } from '../config/env.js';
 import { UnauthorizedError, ConflictError, NotFoundError } from '../shared/errors/AppError.js';
 import { isAllowedMonth, isPastDate, isWeekend, mapReservationStatus, mapReservationStatusToPrisma, parseDateKey, toDateKey, } from '../shared/utils/reservation.utils.js';
 import { GetAvailabilityUseCase } from './public.use-cases.js';
@@ -115,7 +115,7 @@ export class ReassignReservationDateUseCase {
             throw new ConflictError('No se permiten fechas pasadas.');
         }
         const bookedCount = await this.reservationRepository.countByDate(reservationDate, id);
-        if (bookedCount >= campaignConfig.maxSlotsPerDay) {
+        if (bookedCount >= getMaxSlotsForDate(reservationDate)) {
             throw new ConflictError('El día destino no tiene cupos disponibles.');
         }
         const updated = await this.reservationRepository.updateDate(id, reservationDate);
@@ -162,7 +162,7 @@ export class GetDashboardUseCase {
         const selectableDays = availability.days.filter((day) => day.isSelectable);
         const fullDates = selectableDays.filter((day) => day.status === 'full').length;
         const availableSlots = selectableDays.reduce((total, day) => total + day.remainingSlots, 0);
-        const totalCapacity = selectableDays.length * campaignConfig.maxSlotsPerDay;
+        const totalCapacity = selectableDays.reduce((total, day) => total + day.maxSlots, 0);
         const bookedSlots = selectableDays.reduce((total, day) => total + day.bookedCount, 0);
         const occupancyRate = totalCapacity > 0 ? Number(((bookedSlots / totalCapacity) * 100).toFixed(2)) : 0;
         return {

@@ -19,4 +19,5 @@ export declare const campaignConfig: {
     readonly allowedMonths: number[];
     readonly minAge: number;
 };
+export declare function getMaxSlotsForDate(date: Date): number;
 //# sourceMappingURL=env.d.ts.map

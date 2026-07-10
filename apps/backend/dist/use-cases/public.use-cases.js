@@ -1,4 +1,4 @@
-import { campaignConfig } from '../config/env.js';
+import { campaignConfig, getMaxSlotsForDate } from '../config/env.js';
 import { ConflictError, NotFoundError, ValidationError } from '../shared/errors/AppError.js';
 import { isAllowedMonth, isPastDate, isWeekend, mapReservationStatus, parseDateKey, toDateKey, } from '../shared/utils/reservation.utils.js';
 export class GetAvailabilityUseCase {
@@ -22,10 +22,11 @@ export class GetAvailabilityUseCase {
                     ? await this.blockedDateRepository.isBlocked(dateKey)
                     : false;
                 let bookedCount = await this.reservationRepository.countByDate(date);
+                const limit = getMaxSlotsForDate(date);
                 if (isBlocked) {
-                    bookedCount = campaignConfig.maxSlotsPerDay;
+                    bookedCount = limit;
                 }
-                const remainingSlots = Math.max(campaignConfig.maxSlotsPerDay - bookedCount, 0);
+                const remainingSlots = Math.max(limit - bookedCount, 0);
                 let status = 'available';
                 let isSelectable = true;
                 if (!isAllowedMonth(date, campaignConfig.allowedMonths)) {
@@ -40,7 +41,7 @@ export class GetAvailabilityUseCase {
                     status = 'past';
                     isSelectable = false;
                 }
-                else if (bookedCount >= campaignConfig.maxSlotsPerDay) {
+                else if (bookedCount >= limit) {
                     status = 'full';
                     isSelectable = false;
                 }
@@ -51,7 +52,7 @@ export class GetAvailabilityUseCase {
                     date: dateKey,
                     bookedCount,
                     remainingSlots,
-                    maxSlots: campaignConfig.maxSlotsPerDay,
+                    maxSlots: limit,
                     status,
                     isSelectable,
                     isBlocked,
@@ -59,7 +60,7 @@ export class GetAvailabilityUseCase {
             }
         }
         return {
-            maxSlotsPerDay: campaignConfig.maxSlotsPerDay,
+            maxSlotsPerDay: getMaxSlotsForDate(referenceDate),
             days,
         };
     }
@@ -98,7 +99,7 @@ export class CreateReservationUseCase {
         if (isBlocked) {
             throw new ConflictError('El día seleccionado ya no tiene cupos disponibles.');
         }
-        if (bookedCount >= campaignConfig.maxSlotsPerDay) {
+        if (bookedCount >= getMaxSlotsForDate(reservationDate)) {
             throw new ConflictError('El día seleccionado ya no tiene cupos disponibles.');
         }
         const reservation = await this.reservationRepository.create(input, existingParticipant?.id);

@@ -1,9 +1,12 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { Calendar, Mail, Phone, User, UserCheck } from 'lucide-react'
 import { Alert, Button, Card, CardContent, Input, SectionTitle } from '@/components'
-import { DEFAULT_RESERVATION_RULES } from '../domain/reservationConfig'
+import type { AvailabilityDay } from '@/services'
+import { DEFAULT_RESERVATION_RULES, getMaxSlotsForDate } from '../domain/reservationConfig'
 import { useReservation } from '../hooks'
 import { EMPTY_PARTICIPANT, type Participant } from '../types'
 import { formatDisplayDate } from '../utils/displayDate'
+import { toDateKey } from '../utils/dateUtils'
 import { cn } from '@/utils'
 
 const ADVISOR_OPTIONS = ['Josselyn', 'Paul']
@@ -59,6 +62,11 @@ export function FormStep() {
       ? 'Selecciona un asesor.'
       : undefined
 
+  const queryClient = useQueryClient()
+  const availability = queryClient.getQueryData<{ maxSlotsPerDay: number; days: AvailabilityDay[] }>(['availability', 'all'])
+  const selectedDay = availability?.days.find((d) => d.date === toDateKey(selectedDate!))
+  const remainingSlots = selectedDay?.remainingSlots ?? 0
+
   return (
     <div className="space-y-6">
       <SectionTitle
@@ -67,7 +75,7 @@ export function FormStep() {
       />
 
       <Alert variant="info" title="Cupos limitados">
-        Solo hay 2 cupos por día. Completa el formulario para asegurar tu lugar.
+        Solo hay {getMaxSlotsForDate(selectedDate!)} cupos por día y {remainingSlots === 1 ? `queda ${remainingSlots} cupo disponible` : `quedan ${remainingSlots} cupos disponibles`}. Completa el formulario para asegurar tu lugar.
       </Alert>
 
       <Card glass>

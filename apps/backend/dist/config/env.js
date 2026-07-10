@@ -32,4 +32,9 @@ export const campaignConfig = {
     allowedMonths: env.ALLOWED_MONTHS.split(',').map(Number),
     minAge: env.MIN_AGE,
 };
+export function getMaxSlotsForDate(date) {
+    const cutoffDate = new Date(Date.UTC(2026, 6, 20));
+    const dateUTC = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+    return dateUTC >= cutoffDate.getTime() ? 3 : 2;
+}
 //# sourceMappingURL=env.js.map

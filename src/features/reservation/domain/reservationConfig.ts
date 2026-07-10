@@ -10,3 +10,9 @@ export const CAMPAIGN_MONTHS: CalendarMonth[] = [
   { year: 2026, month: 7, label: 'Julio 2026' },
   { year: 2026, month: 8, label: 'Agosto 2026' },
 ]
+
+export function getMaxSlotsForDate(date: Date): number {
+  const cutoff = new Date(2026, 6, 20)
+  const normalized = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+  return normalized >= cutoff ? 3 : 2
+}
