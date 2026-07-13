@@ -2,6 +2,7 @@ import { ReservationRepository, TicketRepository, } from '../repositories/reserv
 import { BlockedDateRepository } from '../repositories/blocked-date.repository.js';
 import { CreateReservationUseCase, GetAvailabilityUseCase, GetTicketUseCase, } from '../use-cases/public.use-cases.js';
 import { BlockDateUseCase, DeleteReservationUseCase, GetDashboardUseCase, GetReservationUseCase, ListReservationsUseCase, LoginAdminUseCase, ReassignReservationDateUseCase, UnblockDateUseCase, UpdateReservationUseCase, } from '../use-cases/admin.use-cases.js';
+import { googleSheetsService } from '../services/GoogleSheetsService.js';
 const reservationRepository = new ReservationRepository();
 const ticketRepository = new TicketRepository();
 const blockedDateRepository = new BlockedDateRepository();
@@ -17,4 +18,5 @@ export const reassignReservationDateUseCase = new ReassignReservationDateUseCase
 export const getDashboardUseCase = new GetDashboardUseCase(reservationRepository, blockedDateRepository);
 export const blockDateUseCase = new BlockDateUseCase(blockedDateRepository);
 export const unblockDateUseCase = new UnblockDateUseCase(blockedDateRepository);
+export { googleSheetsService };
 //# sourceMappingURL=container.js.map

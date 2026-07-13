@@ -178,3 +178,9 @@ export async function reassignReservationDate(
     headers: { Authorization: `Bearer ${token}` },
   })
 }
+
+export async function syncGoogleSheets(token: string): Promise<void> {
+  await api.post('/api/v1/admin/sheets/sync', undefined, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}

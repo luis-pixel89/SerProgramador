@@ -12,7 +12,7 @@ export const CAMPAIGN_MONTHS: CalendarMonth[] = [
 ]
 
 export function getMaxSlotsForDate(date: Date): number {
-  const cutoff = new Date(2026, 6, 20)
+  const cutoff = new Date(2026, 6, 13)
   const normalized = new Date(date.getFullYear(), date.getMonth(), date.getDate())
-  return normalized >= cutoff ? 3 : 2
+  return normalized >= cutoff ? 4 : 2
 }

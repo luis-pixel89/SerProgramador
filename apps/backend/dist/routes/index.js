@@ -48,5 +48,8 @@ adminRoutes.delete('/blocked-dates/:date', (req, res, next) => {
 adminRoutes.get('/dashboard', (req, res, next) => {
     AdminController.getDashboard(req, res).catch(next);
 });
+adminRoutes.post('/sheets/sync', (req, res, next) => {
+    AdminController.syncSheets(req, res).catch(next);
+});
 export { publicRoutes, authRoutes, adminRoutes };
 //# sourceMappingURL=index.js.map

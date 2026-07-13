@@ -19,6 +19,12 @@ const envSchema = z.object({
     MIN_AGE: z.coerce.number().default(15),
     ADMIN_USERNAME: z.string().default('admin'),
     ADMIN_PASSWORD: z.string().default('admin123'),
+
+    GOOGLE_SHEETS_ENABLED: z.coerce.boolean().default(false),
+    GOOGLE_PROJECT_ID: z.string().default(''),
+    GOOGLE_PRIVATE_KEY: z.string().default(''),
+    GOOGLE_CLIENT_EMAIL: z.string().default(''),
+    GOOGLE_SHEET_ID: z.string().default(''),
 });
 const parsed = envSchema.safeParse(process.env);
 if (!parsed.success) {
@@ -33,8 +39,8 @@ export const campaignConfig = {
     minAge: env.MIN_AGE,
 };
 export function getMaxSlotsForDate(date) {
-    const cutoffDate = new Date(Date.UTC(2026, 6, 20));
+    const cutoffDate = new Date(Date.UTC(2026, 6, 13));
     const dateUTC = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
-    return dateUTC >= cutoffDate.getTime() ? 3 : 2;
+    return dateUTC >= cutoffDate.getTime() ? 4 : 2;
 }
 //# sourceMappingURL=env.js.map

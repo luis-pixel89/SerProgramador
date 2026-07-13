@@ -26,6 +26,7 @@ import * as XLSX from 'xlsx'
 import {
   fetchDashboard,
   fetchReservations,
+  syncGoogleSheets,
   updateReservation,
 } from '@/services'
 
@@ -130,6 +131,7 @@ export function AdminReservationsTable() {
   const queryClient = useQueryClient()
   const [page, setPage] = useState(1)
   const [cancellingId, setCancellingId] = useState<string | null>(null)
+  const [syncing, setSyncing] = useState(false)
   const [reassignTarget, setReassignTarget] = useState<{
     id: string
     fullName: string
@@ -178,6 +180,18 @@ export function AdminReservationsTable() {
     const wb = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(wb, ws, 'Reservas')
     XLSX.writeFile(wb, `reservas-confirmadas-${new Date().toISOString().slice(0, 10)}.xlsx`)
+  }
+
+  async function handleSyncSheets() {
+    if (!token || syncing) return
+    setSyncing(true)
+    try {
+      await syncGoogleSheets(token)
+    } catch {
+      // Error logged by backend; frontend stays silent
+    } finally {
+      setSyncing(false)
+    }
   }
 
   if (isLoading) {
@@ -233,9 +247,14 @@ export function AdminReservationsTable() {
           title="Reservas registradas"
           description={`${data?.total ?? 0} reserva(s) en total.`}
         />
-        <Button size="sm" variant="outline" onClick={handleExportExcel} disabled={reservations.length === 0}>
-          Exportar Excel
-        </Button>
+        <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={handleSyncSheets} disabled={syncing}>
+            {syncing ? 'Sincronizando...' : 'Sincronizar Google Sheets'}
+          </Button>
+          <Button size="sm" variant="outline" onClick={handleExportExcel} disabled={reservations.length === 0}>
+            Exportar Excel
+          </Button>
+        </div>
       </div>
 
       <div className="overflow-x-auto">

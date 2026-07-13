@@ -9,6 +9,7 @@ export {
   fetchAvailability,
   fetchCampaignConfig,
   reassignReservationDate,
+  syncGoogleSheets,
   blockDate,
   unblockDate,
   type CampaignConfig,

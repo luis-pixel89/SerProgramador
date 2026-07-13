@@ -1,4 +1,4 @@
-import { blockDateUseCase, createReservationUseCase, deleteReservationUseCase, getAvailabilityUseCase, getDashboardUseCase, getReservationUseCase, getTicketUseCase, listReservationsUseCase, loginAdminUseCase, reassignReservationDateUseCase, unblockDateUseCase, updateReservationUseCase, } from '../config/container.js';
+import { blockDateUseCase, createReservationUseCase, deleteReservationUseCase, getAvailabilityUseCase, getDashboardUseCase, getReservationUseCase, getTicketUseCase, googleSheetsService, listReservationsUseCase, loginAdminUseCase, reassignReservationDateUseCase, unblockDateUseCase, updateReservationUseCase, } from '../config/container.js';
 import { campaignConfig, env } from '../config/env.js';
 import { adminReservationsQuerySchema, availabilityQuerySchema, createReservationSchema, loginSchema, reassignDateSchema, updateReservationSchema, } from '../schemas/reservation.schema.js';
 import { getRouteParam } from '../shared/utils/http.utils.js';
@@ -16,6 +16,7 @@ export class PublicController {
         const body = createReservationSchema.parse(req.body);
         const result = await createReservationUseCase.execute(body);
         logger.reservationCreated(result.reservationNumber, body.reservationDate);
+        googleSheetsService.syncAll().catch((err) => logger.error('Google Sheets sync failed after create', 'sheets', { error: err.message }, err));
         res.status(201).json(result);
     }
     static async getTicket(req, res) {
@@ -52,12 +53,14 @@ export class AdminController {
         const body = updateReservationSchema.parse(req.body);
         const result = await updateReservationUseCase.execute(getRouteParam(req.params.id), body);
         logger.reservationUpdated(result.id);
+        googleSheetsService.syncAll().catch((err) => logger.error('Google Sheets sync failed after update', 'sheets', { error: err.message }, err));
         res.json(result);
     }
     static async deleteReservation(req, res) {
         const id = getRouteParam(req.params.id);
         await deleteReservationUseCase.execute(id);
         logger.reservationDeleted(id);
+        googleSheetsService.syncAll().catch((err) => logger.error('Google Sheets sync failed after delete', 'sheets', { error: err.message }, err));
         res.status(204).send();
     }
     static async reassignDate(req, res) {
@@ -65,11 +68,16 @@ export class AdminController {
         const body = reassignDateSchema.parse(req.body);
         const result = await reassignReservationDateUseCase.execute(id, body.reservationDate);
         logger.reservationReassigned(id, body.reservationDate);
+        googleSheetsService.syncAll().catch((err) => logger.error('Google Sheets sync failed after reassign', 'sheets', { error: err.message }, err));
         res.json(result);
     }
     static async getDashboard(_req, res) {
         const result = await getDashboardUseCase.execute();
         res.json(result);
+    }
+    static async syncSheets(_req, res) {
+        await googleSheetsService.syncAll();
+        res.json({ message: 'Sincronización completada' });
     }
     static async blockDate(req, res) {
         const { date } = req.params;
