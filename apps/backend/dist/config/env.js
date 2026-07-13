@@ -23,6 +23,7 @@ const envSchema = z.object({
     GOOGLE_SHEETS_ENABLED: z.coerce.boolean().default(false),
     GOOGLE_PROJECT_ID: z.string().default(''),
     GOOGLE_PRIVATE_KEY: z.string().default(''),
+    GOOGLE_PRIVATE_KEY_BASE64: z.string().default(''),
     GOOGLE_CLIENT_EMAIL: z.string().default(''),
     GOOGLE_SHEET_ID: z.string().default(''),
 });

@@ -25,11 +25,15 @@ export class GoogleSheetsService {
   }
 
   async #getAuthClient() {
+    const privateKey = env.GOOGLE_PRIVATE_KEY_BASE64
+      ? Buffer.from(env.GOOGLE_PRIVATE_KEY_BASE64, 'base64').toString('utf-8')
+      : env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n')
+
     const auth = new google.auth.GoogleAuth({
       credentials: {
         type: 'service_account',
         project_id: env.GOOGLE_PROJECT_ID,
-        private_key: env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+        private_key: privateKey,
         client_email: env.GOOGLE_CLIENT_EMAIL,
       },
       scopes: ['https://www.googleapis.com/auth/spreadsheets'],
