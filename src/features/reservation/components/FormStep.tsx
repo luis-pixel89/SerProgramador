@@ -134,8 +134,11 @@ export function FormStep() {
                     key={String(value)}
                     type="button"
                     onClick={() => {
-                      updateField('hasAdvisor', value as Participant['hasAdvisor'])
-                      if (!value) updateField('advisorName', null)
+                      setParticipant({
+                        ...formData,
+                        hasAdvisor: value,
+                        advisorName: value ? formData.advisorName : null,
+                      })
                     }}
                     className={cn(
                       'flex-1 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all duration-200',

@@ -31,11 +31,9 @@ import {
 } from '@/services'
 
 function formatDate(iso: string): string {
-  return new Date(iso + 'T12:00:00').toLocaleDateString('es-EC', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  })
+  const [year, month, day] = iso.split('-')
+  if (!year || !month || !day) return ''
+  return `${day}/${month}/${year}`
 }
 
 function formatFullDate(iso: string): string {
@@ -140,8 +138,8 @@ export function AdminReservationsTable() {
   const limit = 10
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: [...QUERY_KEYS.reservations.list(), page],
-    queryFn: () => fetchReservations(token!, { page, limit }),
+    queryKey: [...QUERY_KEYS.reservations.list(), page, limit],
+    queryFn: () => fetchReservations(token!, { page, limit, status: 'confirmed' }),
     enabled: !!token,
   })
 
@@ -163,10 +161,10 @@ export function AdminReservationsTable() {
     onError: () => setCancellingId(null),
   })
 
-  function handleExportExcel() {
-    const allReservations = data?.data ?? []
-    const confirmed = allReservations.filter((r) => r.status === 'confirmed')
-    const rows = confirmed.map((r) => ({
+  async function handleExportExcel() {
+    if (!token) return
+    const allData = await fetchReservations(token!, { limit: 99999, status: 'confirmed' })
+    const rows = allData.data.map((r) => ({
       'No. Reserva': r.reservationNumber,
       'Nombre': r.participant.fullName,
       'Correo': r.participant.email,
@@ -236,8 +234,7 @@ export function AdminReservationsTable() {
     )
   }
 
-  const allReservations = data?.data ?? []
-  const reservations = allReservations.filter((r) => r.status === 'confirmed')
+  const reservations = data?.data ?? []
   const totalPages = data?.totalPages ?? 1
 
   return (

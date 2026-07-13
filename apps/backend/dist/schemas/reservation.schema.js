@@ -37,6 +37,6 @@ export const adminReservationsQuerySchema = z.object({
     status: z.enum(['confirmed', 'cancelled', 'completed']).optional(),
     search: z.string().trim().optional(),
     page: z.coerce.number().int().min(1).default(1),
-    limit: z.coerce.number().int().min(1).max(200).default(50),
+    limit: z.coerce.number().int().min(1).max(99999).default(50),
 });
 //# sourceMappingURL=reservation.schema.js.map

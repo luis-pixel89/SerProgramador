@@ -62,15 +62,15 @@ export class GoogleSheetsService {
     return String(n).padStart(2, '0')
   }
 
-  #formatDate(iso) {
-    if (!iso) return ''
-    const d = new Date(iso + 'T12:00:00')
+  #formatDate(value) {
+    if (!value) return ''
+    const d = value instanceof Date ? value : new Date(value + 'T12:00:00')
     return `${this.#pad(d.getDate())}/${this.#pad(d.getMonth() + 1)}/${d.getFullYear()}`
   }
 
-  #formatCreatedAt(iso) {
-    if (!iso) return ''
-    const d = new Date(iso)
+  #formatCreatedAt(value) {
+    if (!value) return ''
+    const d = value instanceof Date ? value : new Date(value)
     return `${this.#pad(d.getDate())}/${this.#pad(d.getMonth() + 1)}/${d.getFullYear()} ${this.#pad(d.getHours())}:${this.#pad(d.getMinutes())}`
   }
 
