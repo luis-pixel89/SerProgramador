@@ -31,8 +31,6 @@ import {
   syncGoogleSheets,
   updateReservation,
 } from '@/services'
-import type { Advisor } from '@/services'
-
 function formatDate(iso: string): string {
   const [year, month, day] = iso.split('-')
   if (!year || !month || !day) return ''
