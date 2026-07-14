@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "postinstall": "cd apps/backend && npm install && npx prisma generate",
     "dev": "vite",
     "dev:full": "concurrently -n frontend,backend -c cyan,green \"npm run dev\" \"node apps/backend/dist/server.js\"",
     "build": "tsc -b && vite build",
