@@ -9,4 +9,8 @@ export const QUERY_KEYS = {
     all: ['campaign'] as const,
     info: () => [...QUERY_KEYS.campaign.all, 'info'] as const,
   },
+  advisors: {
+    all: ['advisors'] as const,
+    list: () => [...QUERY_KEYS.advisors.all, 'list'] as const,
+  },
 } as const

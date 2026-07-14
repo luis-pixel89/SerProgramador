@@ -24,11 +24,14 @@ import { ReassignModal } from '@/features/admin/components'
 import { generatePasePdf } from '@/features/reservation/utils/generatePasePdf'
 import * as XLSX from 'xlsx'
 import {
+  fetchAdvisors,
   fetchDashboard,
   fetchReservations,
+  assignAdvisor,
   syncGoogleSheets,
   updateReservation,
 } from '@/services'
+import type { Advisor } from '@/services'
 
 function formatDate(iso: string): string {
   const [year, month, day] = iso.split('-')
@@ -135,6 +138,8 @@ export function AdminReservationsTable() {
     fullName: string
     reservationDate: string
   } | null>(null)
+  const [assigningId, setAssigningId] = useState<string | null>(null)
+  const [assignError, setAssignError] = useState<string | null>(null)
   const limit = 10
 
   const { data, isLoading, isError } = useQuery({
@@ -147,6 +152,28 @@ export function AdminReservationsTable() {
     queryClient.invalidateQueries({ queryKey: QUERY_KEYS.reservations.all })
     queryClient.invalidateQueries({ queryKey: ['availability', 'all'] })
   }
+
+  const { data: advisors } = useQuery({
+    queryKey: QUERY_KEYS.advisors.list(),
+    queryFn: () => fetchAdvisors(token!),
+    enabled: !!token,
+  })
+
+  const assignMutation = useMutation({
+    mutationFn: async ({ id, advisorName }: { id: string; advisorName: string }) => {
+      setAssigningId(id)
+      setAssignError(null)
+      await assignAdvisor(token!, id, advisorName)
+    },
+    onSuccess: () => {
+      setAssigningId(null)
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.reservations.all })
+    },
+    onError: (err: Error) => {
+      setAssigningId(null)
+      setAssignError(err.message || 'Error al asignar asesor')
+    },
+  })
 
   const cancelMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -202,8 +229,8 @@ export function AdminReservationsTable() {
           <table className="w-full min-w-[960px] text-left">
             <thead>
               <tr className="border-b border-[#2d2d2d] bg-[#111111]/80">
-                {['Nombre', 'Correo', 'Edad', 'Teléfono', 'Fecha', 'Estado', 'Acciones'].map((column) => (
-                  <th key={column} className="px-6 py-3 text-xs font-semibold uppercase tracking-wide text-[#9ca3af]">
+                {['Nombre', 'Correo', 'Teléfono', 'Asesor', 'Fecha', 'Acciones'].map((column) => (
+                  <th key={column} className="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wide text-[#9ca3af]">
                     {column}
                   </th>
                 ))}
@@ -212,7 +239,7 @@ export function AdminReservationsTable() {
             <tbody>
               {Array.from({ length: 5 }).map((_, i) => (
                 <tr key={i} className="border-b border-[#2d2d2d]">
-                  {Array.from({ length: 7 }).map((_, j) => (
+                  {Array.from({ length: 6 }).map((_, j) => (
                     <td key={j} className="px-6 py-4">
                       <div className="h-4 w-full max-w-28 animate-pulse rounded bg-[#1e1e1e]" />
                     </td>
@@ -254,14 +281,22 @@ export function AdminReservationsTable() {
         </div>
       </div>
 
+      {assignError && (
+        <div className="px-6 pt-4">
+          <Alert variant="error" title="Error al asignar asesor">
+            {assignError}
+          </Alert>
+        </div>
+      )}
+
       <div className="overflow-x-auto">
         <table className="w-full min-w-[960px] text-left">
           <thead>
             <tr className="border-b border-[#2d2d2d] bg-[#111111]/80">
-              {['Nombre', 'Correo', 'Edad', 'Teléfono', 'Fecha', 'Estado', 'Acciones'].map((column) => (
+              {['Nombre', 'Correo', 'Teléfono', 'Asesor', 'Fecha', 'Acciones'].map((column) => (
                 <th
                   key={column}
-                  className="px-6 py-3 text-xs font-semibold uppercase tracking-wide text-[#9ca3af]"
+                  className="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wide text-[#9ca3af]"
                 >
                   {column}
                 </th>
@@ -271,13 +306,12 @@ export function AdminReservationsTable() {
           <tbody>
             {reservations.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-6 py-12 text-center text-sm text-[#9ca3af]">
+                <td colSpan={6} className="px-6 py-12 text-center text-sm text-[#9ca3af]">
                   No hay reservas registradas.
                 </td>
               </tr>
             )}
             {reservations.map((reservation) => {
-              const { variant, label } = getStatusBadge(reservation.status)
               return (
                 <tr
                   key={reservation.id}
@@ -290,16 +324,36 @@ export function AdminReservationsTable() {
                     {reservation.participant.email}
                   </td>
                   <td className="px-6 py-4 text-sm text-[#9ca3af]">
-                    {reservation.participant.age}
+                    {reservation.participant.phone}
                   </td>
                   <td className="px-6 py-4 text-sm text-[#9ca3af]">
-                    {reservation.participant.phone}
+                    {reservation.participant.advisor && !reservation.participant.advisorAssignedByAdmin ? (
+                      <span className="text-white">{reservation.participant.advisor}</span>
+                    ) : (
+                      <select
+                        value={reservation.participant.advisor ?? ""}
+                        disabled={assigningId === reservation.id}
+                        onChange={(e) => {
+                          const name = e.target.value
+                          if (name) {
+                            assignMutation.mutate({ id: reservation.id, advisorName: name })
+                          }
+                        }}
+                        className={`w-full max-w-40 rounded border bg-[#1e1e1e] px-2 py-1 text-sm text-white focus:outline-none focus:ring-1 focus:ring-[#ef0a10] disabled:cursor-not-allowed disabled:opacity-50 ${assigningId === reservation.id ? 'animate-pulse' : 'border-[#2d2d2d]'}`}
+                      >
+                        <option value="" disabled>
+                          {assigningId === reservation.id ? 'Asignando...' : 'Seleccionar asesor'}
+                        </option>
+                        {(advisors ?? []).map((a) => (
+                          <option key={a.id} value={a.name}>
+                            {a.name}
+                          </option>
+                        ))}
+                      </select>
+                    )}
                   </td>
                   <td className="px-6 py-4 text-sm text-[#9ca3af]" title={formatFullDate(reservation.reservationDate)}>
                     {formatDate(reservation.reservationDate)}
-                  </td>
-                  <td className="px-6 py-4">
-                    <Badge variant={variant}>{label}</Badge>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex gap-2">

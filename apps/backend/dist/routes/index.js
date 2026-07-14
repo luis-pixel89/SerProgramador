@@ -45,6 +45,12 @@ adminRoutes.post('/blocked-dates/:date', (req, res, next) => {
 adminRoutes.delete('/blocked-dates/:date', (req, res, next) => {
     AdminController.unblockDate(req, res).catch(next);
 });
+adminRoutes.get('/advisors', (req, res, next) => {
+    AdminController.listAdvisors(req, res).catch(next);
+});
+adminRoutes.patch('/reservations/:id/advisor', (req, res, next) => {
+    AdminController.assignAdvisor(req, res).catch(next);
+});
 adminRoutes.get('/dashboard', (req, res, next) => {
     AdminController.getDashboard(req, res).catch(next);
 });

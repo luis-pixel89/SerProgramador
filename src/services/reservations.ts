@@ -25,6 +25,11 @@ export interface LoginResult {
   admin: { id: string; username: string; role: string }
 }
 
+export interface Advisor {
+  id: string
+  name: string
+}
+
 export interface DashboardStats {
   totalReservations: number
   availableSlots: number
@@ -55,6 +60,7 @@ export interface ReservationListItem {
     phone: string
     age: number
     advisor: string | null
+    advisorAssignedByAdmin: boolean
   }
   ticket: { id: string; ticketNumber: string } | null
 }
@@ -183,4 +189,22 @@ export async function syncGoogleSheets(token: string): Promise<void> {
   await api.post('/api/v1/admin/sheets/sync', undefined, {
     headers: { Authorization: `Bearer ${token}` },
   })
+}
+
+export async function fetchAdvisors(token: string): Promise<Advisor[]> {
+  const { data } = await api.get('/api/v1/admin/advisors', {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return data
+}
+
+export async function assignAdvisor(
+  token: string,
+  id: string,
+  advisorName: string,
+): Promise<ReservationListItem> {
+  const { data } = await api.patch(`/api/v1/admin/reservations/${id}/advisor`, { advisorName }, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return data
 }

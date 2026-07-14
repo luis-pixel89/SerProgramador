@@ -31,6 +31,10 @@ export const availabilityQuerySchema = z.object({
     month: z.coerce.number().int().min(minAllowed).max(maxAllowed).optional(),
     year: z.coerce.number().int().default(campaignConfig.campaignYear),
 });
+export const assignAdvisorSchema = z.object({
+    advisorName: z.string().trim().min(1, 'El nombre del asesor es requerido.'),
+});
+
 export const adminReservationsQuerySchema = z.object({
     month: z.coerce.number().int().min(1).max(12).optional(),
     year: z.coerce.number().int().optional(),

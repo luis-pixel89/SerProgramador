@@ -12,6 +12,8 @@ export {
   syncGoogleSheets,
   blockDate,
   unblockDate,
+  fetchAdvisors,
+  assignAdvisor,
   type CampaignConfig,
   type CreateReservationData,
   type CreateReservationResult,
@@ -21,4 +23,5 @@ export {
   type ReservationListItem,
   type ReservationsResponse,
   type AvailabilityDay,
+  type Advisor,
 } from './reservations'

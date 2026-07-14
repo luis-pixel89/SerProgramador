@@ -174,7 +174,7 @@ export class GetDashboardUseCase {
         };
     }
 }
-function mapReservationDetail(reservation) {
+export function mapReservationDetail(reservation) {
     return {
         id: reservation.id,
         reservationNumber: reservation.reservationNumber,
@@ -188,6 +188,7 @@ function mapReservationDetail(reservation) {
             phone: reservation.participant.phone,
             age: reservation.participant.age,
             advisor: reservation.participant.advisor,
+            advisorAssignedByAdmin: reservation.participant.advisorAssignedByAdmin,
         },
         ticket: reservation.ticket
             ? {

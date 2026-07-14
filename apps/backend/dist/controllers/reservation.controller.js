@@ -1,6 +1,6 @@
-import { blockDateUseCase, createReservationUseCase, deleteReservationUseCase, getAvailabilityUseCase, getDashboardUseCase, getReservationUseCase, getTicketUseCase, googleSheetsService, listReservationsUseCase, loginAdminUseCase, reassignReservationDateUseCase, unblockDateUseCase, updateReservationUseCase, } from '../config/container.js';
+import { assignAdvisorUseCase, blockDateUseCase, createReservationUseCase, deleteReservationUseCase, getAvailabilityUseCase, getDashboardUseCase, getReservationUseCase, getTicketUseCase, googleSheetsService, listAdvisorsUseCase, listReservationsUseCase, loginAdminUseCase, reassignReservationDateUseCase, unblockDateUseCase, updateReservationUseCase, } from '../config/container.js';
 import { campaignConfig, env } from '../config/env.js';
-import { adminReservationsQuerySchema, availabilityQuerySchema, createReservationSchema, loginSchema, reassignDateSchema, updateReservationSchema, } from '../schemas/reservation.schema.js';
+import { adminReservationsQuerySchema, assignAdvisorSchema, availabilityQuerySchema, createReservationSchema, loginSchema, reassignDateSchema, updateReservationSchema, } from '../schemas/reservation.schema.js';
 import { getRouteParam } from '../shared/utils/http.utils.js';
 import { logger } from '../services/LoggerService.js';
 export class PublicController {
@@ -75,6 +75,20 @@ export class AdminController {
         const result = await getDashboardUseCase.execute();
         res.json(result);
     }
+    static async listAdvisors(_req, res) {
+        const result = await listAdvisorsUseCase.execute();
+        res.json(result);
+    }
+
+    static async assignAdvisor(req, res) {
+        const id = getRouteParam(req.params.id);
+        const body = assignAdvisorSchema.parse(req.body);
+        const result = await assignAdvisorUseCase.execute(id, body.advisorName);
+        logger.reservationUpdated(id);
+        googleSheetsService.syncAll().catch((err) => logger.error('Google Sheets sync failed after assign advisor', 'sheets', { error: err.message }, err));
+        res.json(result);
+    }
+
     static async syncSheets(_req, res) {
         await googleSheetsService.syncAll();
         res.json({ message: 'Sincronización completada' });

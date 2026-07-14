@@ -8,14 +8,15 @@ datasource db {
 }
 
 model Participant {
-  id           String        @id @default(cuid())
-  fullName     String
-  email        String        @unique
-  phone        String
-  age          Int
-  advisor      String?
-  createdAt    DateTime      @default(now())
-  reservations Reservation[]
+  id                      String        @id @default(cuid())
+  fullName                String
+  email                   String        @unique
+  phone                   String
+  age                     Int
+  advisor                 String?
+  advisorAssignedByAdmin  Boolean       @default(false)
+  createdAt               DateTime      @default(now())
+  reservations            Reservation[]
 
   @@index([fullName])
 }
@@ -48,6 +49,11 @@ model Ticket {
   reservation   Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
 
   @@index([ticketNumber])
+}
+
+model Advisor {
+  id   String @id @default(cuid())
+  name String @unique
 }
 
 model BlockedDate {
