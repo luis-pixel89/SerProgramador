@@ -143,7 +143,7 @@ export async function generatePasePdf(data: {
   const fields = [
     ['Nombre', data.fullName],
     ['Email', data.email],
-    ['Telefono', data.phone],
+    ['Teléfono', data.phone],
     ['Edad', String(data.age)],
     ['Fecha', data.date],
     ['Horario', CAMPAIGN_SCHEDULE],
@@ -166,7 +166,7 @@ export async function generatePasePdf(data: {
   pdf.setFontSize(8)
   pdf.setFont('helvetica', 'normal')
   setTextBlack(pdf)
-  pdf.text('Escanea para ver la ubicacion', pageW / 2, y, { align: 'center' })
+  pdf.text('Escanea para ver la ubicación', pageW / 2, y, { align: 'center' })
 
   y += 12
   const footerY = pageH - TEMPLATE_MARGINS.bottom - 8
