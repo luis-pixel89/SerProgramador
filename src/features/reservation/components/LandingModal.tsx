@@ -115,7 +115,7 @@ export function LandingModal() {
                     <p className="text-xs font-medium uppercase tracking-wide text-[#9ca3af]">
                       Horario
                     </p>
-                    <p className="font-medium text-white">08:00 AM - 02:00 PM</p>
+                    <p className="font-medium text-white">09:00 AM - 01:00 PM</p>
                   </div>
                 </CardContent>
               </Card>
